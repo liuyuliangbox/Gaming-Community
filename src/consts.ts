@@ -10,6 +10,9 @@ export const WORKING_TITLE_NOTE = '正式名称待定 / Working Title';
 export const DISCUSSIONS_URL =
 	'https://github.com/liuyuliangbox/Gaming-Community/discussions';
 
+/** 论坛短链（Cloudflare 301 到 Discussions） */
+export const BBS_URL = 'https://bbs.aridjaya.eu.org';
+
 /**
  * Giscus 配置：在 https://giscus.app/zh-CN 按仓库生成后填入。
  * 需先在仓库 Settings → Features 启用 Discussions，并创建「评论」分类。

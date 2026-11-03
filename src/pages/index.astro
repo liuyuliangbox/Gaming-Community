@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
-	DISCUSSIONS_URL,
+	BBS_URL,
 	PROJECT_CODENAME,
 	SITE_DESCRIPTION,
 	SITE_TAGLINE,
@@ -27,7 +27,7 @@ const posts = (await getCollection('logs'))
 				<a class="btn btn-primary" href="/logs/">阅读开发日志</a>
 				<a
 					class="btn btn-ghost"
-					href={DISCUSSIONS_URL}
+					href={BBS_URL}
 					target="_blank"
 					rel="noopener noreferrer">加入讨论</a
 				>

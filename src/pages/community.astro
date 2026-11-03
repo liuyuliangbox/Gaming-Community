@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { DISCUSSIONS_URL, SITE_TITLE } from '../consts';
+import { BBS_URL, SITE_TITLE } from '../consts';
 ---
 
 <BaseLayout title="社区" description={`${SITE_TITLE} 社区规则与讨论入口`}>
@@ -12,8 +12,8 @@ import { DISCUSSIONS_URL, SITE_TITLE } from '../consts';
 		</p>
 
 		<p>
-			<a class="btn btn-primary" href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer"
-				>进入 Discussions</a
+			<a class="btn btn-primary" href={BBS_URL} target="_blank" rel="noopener noreferrer"
+				>进入论坛</a
 			>
 		</p>
 
@@ -43,7 +43,10 @@ import { DISCUSSIONS_URL, SITE_TITLE } from '../consts';
 			<h2>置顶导航</h2>
 			<p>
 				论坛开启后会固定一篇「社区导航」：官网、最新日志、规则与反馈模板都会放在里面。也可通过
-				<code>bbs.aridjaya.eu.org</code> 跳转到 Discussions。
+				<a class="bbs-link" href={BBS_URL} target="_blank" rel="noopener noreferrer"
+					>bbs.aridjaya.eu.org</a
+				>
+				跳转到 Discussions。
 			</p>
 		</section>
 	</main>
@@ -88,5 +91,15 @@ import { DISCUSSIONS_URL, SITE_TITLE } from '../consts';
 
 	li {
 		margin-bottom: 0.45rem;
+	}
+
+	.bbs-link {
+		color: #1677ff;
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+
+	.bbs-link:hover {
+		color: #0958d9;
 	}
 </style>

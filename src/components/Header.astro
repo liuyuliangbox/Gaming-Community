@@ -1,6 +1,6 @@
 ---
 import {
-	DISCUSSIONS_URL,
+	BBS_URL,
 	PROJECT_CODENAME,
 	SITE_TITLE,
 } from '../consts';
@@ -19,9 +19,7 @@ import HeaderLink from './HeaderLink.astro';
 			<HeaderLink href="/about/">关于</HeaderLink>
 			<HeaderLink href="/community/">社区</HeaderLink>
 			<HeaderLink href="/download/">下载</HeaderLink>
-			<a class="discuss" href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer"
-				>论坛</a
-			>
+			<a class="discuss" href={BBS_URL} target="_blank" rel="noopener noreferrer">论坛</a>
 		</div>
 	</nav>
 </header>
