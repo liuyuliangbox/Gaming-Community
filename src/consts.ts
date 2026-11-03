@@ -16,9 +16,9 @@ export const DISCUSSIONS_URL =
  */
 export const GISCUS = {
 	repo: 'liuyuliangbox/Gaming-Community',
-	repoId: '', // 从 giscus.app 复制
-	category: '评论',
-	categoryId: '', // 从 giscus.app 复制
+	repoId: 'R_kgDOVg4cNg',
+	category: 'General',
+	categoryId: 'DIC_kwDOVg4cNs4DKRAY',
 	mapping: 'pathname',
 	strict: '0',
 	reactionsEnabled: '1',
