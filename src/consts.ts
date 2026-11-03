@@ -20,7 +20,7 @@ export const BBS_URL = 'https://bbs.aridjaya.eu.org';
 export const GISCUS = {
 	repo: 'liuyuliangbox/Gaming-Community',
 	repoId: 'R_kgDOVg4cNg',
-	category: 'General',
+	category: '闲聊/General',
 	categoryId: 'DIC_kwDOVg4cNs4DKRAY',
 	mapping: 'pathname',
 	strict: '0',
