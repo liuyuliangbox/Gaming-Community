@@ -1,6 +1,6 @@
 # Cloudflare Pages 与域名绑定清单
 
-## 1. 创建 Pages 项目
+## 1. 官网（Gaming-Community）
 
 1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git
 2. 选择 `liuyuliangbox/Gaming-Community`
@@ -9,34 +9,26 @@
    - Output directory: `dist`
    - Root directory: `/`
 4. Variables：`NODE_VERSION` = `22`
-5. Save and Deploy，得到 `*.pages.dev` 预览域名
+5. 自定义域：`game.aridjaya.eu.org`
 
-## 2. 绑定 game.aridjaya.eu.org
+## 2. 论坛（CForum）
 
-1. Pages 项目 → Custom domains → Set up a custom domain
-2. 输入 `game.aridjaya.eu.org`
-3. 若域名已在同一 Cloudflare 账号，DNS 记录通常自动添加
-4. 否则手动添加：
+论坛仓库：`liuyuliangbox/CForum`  
+线上 Pages 项目名：**`cforum-cae`**（`cforum.pages.dev` 名可能已被占用，勿绑错项目）
 
-```text
-Type: CNAME
-Name: game
-Target: <project-name>.pages.dev
-Proxy: Proxied（橙色云）
-```
+- 预览：https://cforum-cae.pages.dev
+- Worker：https://cforum.563021874.workers.dev
 
-## 3. bbs 子域跳转 Discussions
+### 绑定 bbs.aridjaya.eu.org
 
-使用 **Redirect Rules**（Rules → Redirect Rules）：
+1. Workers & Pages → 打开 **`cforum-cae`**
+2. Custom domains → 添加 `bbs.aridjaya.eu.org`
+3. **删除**此前把 `bbs` 301 到 GitHub Discussions 的 Redirect Rule（若有）
 
-- If：Hostname equals `bbs.aridjaya.eu.org`
-- Then：Dynamic redirect → `https://github.com/liuyuliangbox/Gaming-Community/discussions`
-- Status：301
+详细步骤见 CForum 仓库 `docs/bind-bbs-domain.md`。
 
-并为 `bbs` 添加一条占位 DNS（例如 CNAME 到 Pages 或 AAAA `100::`，按 Cloudflare 对 Redirect 的要求），确保请求先进入 Cloudflare 再被重定向。
-
-## 4. 验证
+## 3. 验证
 
 - https://game.aridjaya.eu.org/
-- https://game.aridjaya.eu.org/logs/
-- https://bbs.aridjaya.eu.org/ → Discussions
+- https://cforum-cae.pages.dev/ （论坛）
+- https://bbs.aridjaya.eu.org/ （绑定后应等于论坛，不再跳 GitHub）
