@@ -1,8 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BBS_URL, DISCUSSIONS_URL, SITE_TITLE } from '../consts';
-
-const COMMUNITY_NAV_URL = `${DISCUSSIONS_URL}/1`;
 ---
 
 <BaseLayout title="社区" description={`${SITE_TITLE} 社区规则与讨论入口`}>
@@ -10,7 +8,7 @@ const COMMUNITY_NAV_URL = `${DISCUSSIONS_URL}/1`;
 		<p class="eyebrow">社区</p>
 		<h1>社区规则</h1>
 		<p class="lead">
-			正式论坛使用 GitHub Discussions。请先阅读规则，再参与讨论、反馈与建议。
+			正式论坛托管在 Cloudflare（CForum）。请先阅读规则，再参与讨论、反馈与建议。
 		</p>
 
 		<p>
@@ -34,7 +32,7 @@ const COMMUNITY_NAV_URL = `${DISCUSSIONS_URL}/1`;
 			<h2>推荐分类</h2>
 			<ul>
 				<li>开发进度：官方日志摘要与征集反馈</li>
-				<li>玩法建议：可投票的设计讨论</li>
+				<li>玩法建议：设计讨论</li>
 				<li>Bug / 体验反馈</li>
 				<li>美术与氛围讨论</li>
 				<li>闲聊 / 招募测试</li>
@@ -42,18 +40,17 @@ const COMMUNITY_NAV_URL = `${DISCUSSIONS_URL}/1`;
 		</section>
 
 		<section>
-			<h2>置顶导航</h2>
+			<h2>入口</h2>
 			<p>
-				论坛开启后会固定一篇「<a
-					class="bbs-link"
-					href={COMMUNITY_NAV_URL}
-					target="_blank"
-					rel="noopener noreferrer">社区导航</a
-				>」：官网、最新日志、规则与反馈模板都会放在里面。也可通过
+				主论坛：
 				<a class="bbs-link" href={BBS_URL} target="_blank" rel="noopener noreferrer"
 					>bbs.aridjaya.eu.org</a
 				>
-				跳转到 Discussions。
+				（国内可访问）。境外开发者也可使用
+				<a class="bbs-link" href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer"
+					>GitHub Discussions</a
+				>
+				作为备用讨论区。
 			</p>
 		</section>
 	</main>
