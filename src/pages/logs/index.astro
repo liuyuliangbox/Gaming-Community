@@ -1,0 +1,118 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('logs')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="开发日志" description={`${SITE_TITLE} 开发日志 · ${SITE_DESCRIPTION}`}>
+	<main class="container page fade-up">
+		<p class="eyebrow">Dev Log</p>
+		<h1>开发日志</h1>
+		<p class="lead">记录进展、设计取舍与需要大家反馈的问题。</p>
+
+		<ul class="log-list">
+			{
+				posts.map((post) => (
+					<li>
+						<a href={`/logs/${post.id}/`}>
+							<span class="date">
+								<FormattedDate date={post.data.pubDate} />
+							</span>
+							<span class="title">{post.data.title}</span>
+							<span class="summary">{post.data.description}</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</main>
+</BaseLayout>
+
+<style>
+	.page {
+		padding: 3rem 0 4rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 0.5rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--copper);
+		font-weight: 600;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 5vw, 2.8rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.lead {
+		margin-bottom: 2rem;
+		max-width: 36rem;
+	}
+
+	.log-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.log-list li {
+		border-top: 1px solid var(--line);
+	}
+
+	.log-list a {
+		display: grid;
+		grid-template-columns: 9rem 1fr;
+		gap: 0.35rem 1.25rem;
+		padding: 1.25rem 0;
+		text-decoration: none;
+		color: inherit;
+		transition: padding-left 0.25s var(--ease);
+	}
+
+	.log-list a:hover {
+		padding-left: 0.4rem;
+	}
+
+	.date {
+		grid-row: span 2;
+		align-self: start;
+		font-size: 0.9rem;
+		color: var(--ink-soft);
+		padding-top: 0.2rem;
+	}
+
+	.title {
+		font-family: var(--font-display);
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: var(--ink);
+	}
+
+	.summary {
+		grid-column: 2;
+		color: var(--ink-soft);
+		font-size: 0.95rem;
+	}
+
+	@media (max-width: 720px) {
+		.log-list a {
+			grid-template-columns: 1fr;
+		}
+
+		.date {
+			grid-row: auto;
+		}
+
+		.summary {
+			grid-column: auto;
+		}
+	}
+</style>

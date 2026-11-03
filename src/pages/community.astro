@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DISCUSSIONS_URL, SITE_TITLE } from '../consts';
+---
+
+<BaseLayout title="社区" description={`${SITE_TITLE} 社区规则与讨论入口`}>
+	<main class="container page fade-up">
+		<p class="eyebrow">社区</p>
+		<h1>社区规则</h1>
+		<p class="lead">
+			正式论坛使用 GitHub Discussions。请先阅读规则，再参与讨论、反馈与建议。
+		</p>
+
+		<p>
+			<a class="btn btn-primary" href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer"
+				>进入 Discussions</a
+			>
+		</p>
+
+		<section>
+			<h2>发言约定</h2>
+			<ul>
+				<li>尊重他人：禁止人身攻击、歧视与骚扰。</li>
+				<li>对事不对人：反馈尽量附带复现步骤、截图或期望行为。</li>
+				<li>不剧透未公开内容：开发者未发布的剧情与数值请勿外传。</li>
+				<li>不发布盗版、外挂、破解或恶意链接。</li>
+				<li>标题写清楚：例如「建议 / Bug / 提问」，方便分类与检索。</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>推荐分类</h2>
+			<ul>
+				<li>开发进度：官方日志摘要与征集反馈</li>
+				<li>玩法建议：可投票的设计讨论</li>
+				<li>Bug / 体验反馈</li>
+				<li>美术与氛围讨论</li>
+				<li>闲聊 / 招募测试</li>
+			</ul>
+		</section>
+
+		<section>
+			<h2>置顶导航</h2>
+			<p>
+				论坛开启后会固定一篇「社区导航」：官网、最新日志、规则与反馈模板都会放在里面。也可通过
+				<code>bbs.aridjaya.eu.org</code> 跳转到 Discussions。
+			</p>
+		</section>
+	</main>
+</BaseLayout>
+
+<style>
+	.page {
+		padding: 3rem 0 4rem;
+		max-width: 42rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 0.5rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--copper);
+		font-weight: 600;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 5vw, 2.8rem);
+		margin-bottom: 1rem;
+	}
+
+	.lead {
+		font-size: 1.1rem;
+	}
+
+	section {
+		margin: 2rem 0;
+	}
+
+	h2 {
+		font-size: 1.35rem;
+	}
+
+	ul {
+		padding-left: 1.2rem;
+		color: var(--ink-soft);
+	}
+
+	li {
+		margin-bottom: 0.45rem;
+	}
+</style>

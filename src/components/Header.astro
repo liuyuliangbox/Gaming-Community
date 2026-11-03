@@ -1,0 +1,111 @@
+---
+import {
+	DISCUSSIONS_URL,
+	PROJECT_CODENAME,
+	SITE_TITLE,
+} from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header class="site-header">
+	<nav class="container nav">
+		<a class="brand" href="/">
+			<span class="brand-name">{SITE_TITLE}</span>
+			<span class="brand-code">{PROJECT_CODENAME}</span>
+		</a>
+		<div class="links">
+			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href="/logs/">开发日志</HeaderLink>
+			<HeaderLink href="/about/">关于</HeaderLink>
+			<HeaderLink href="/community/">社区</HeaderLink>
+			<HeaderLink href="/download/">下载</HeaderLink>
+			<a class="discuss" href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer"
+				>论坛</a
+			>
+		</div>
+	</nav>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		backdrop-filter: blur(12px);
+		background: rgba(238, 243, 247, 0.82);
+		border-bottom: 1px solid var(--line);
+	}
+
+	.nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		min-height: 4rem;
+	}
+
+	.brand {
+		display: flex;
+		flex-direction: column;
+		text-decoration: none;
+		color: var(--ink);
+		line-height: 1.1;
+	}
+
+	.brand-name {
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: 1.15rem;
+		letter-spacing: -0.03em;
+	}
+
+	.brand-code {
+		font-size: 0.72rem;
+		color: var(--ink-soft);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.15rem 0.85rem;
+	}
+
+	.links :global(a) {
+		color: var(--ink-soft);
+		text-decoration: none;
+		font-size: 0.92rem;
+		font-weight: 500;
+		padding: 0.35rem 0;
+		border-bottom: 2px solid transparent;
+		transition:
+			color 0.2s var(--ease),
+			border-color 0.2s var(--ease);
+	}
+
+	.links :global(a:hover),
+	.links :global(a.active) {
+		color: var(--ink);
+		border-bottom-color: var(--copper);
+	}
+
+	.discuss {
+		color: var(--copper) !important;
+		font-weight: 600 !important;
+	}
+
+	@media (max-width: 720px) {
+		.nav {
+			flex-direction: column;
+			align-items: flex-start;
+			padding-block: 0.85rem;
+		}
+
+		.links {
+			justify-content: flex-start;
+		}
+	}
+</style>

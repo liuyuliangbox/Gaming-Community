@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+	PROJECT_CODENAME,
+	SITE_TITLE,
+	WORKING_TITLE_NOTE,
+} from '../consts';
+---
+
+<BaseLayout title="关于" description={`${SITE_TITLE} 与 ${PROJECT_CODENAME} 项目介绍`}>
+	<main class="container page fade-up">
+		<p class="eyebrow">关于</p>
+		<h1>{SITE_TITLE}</h1>
+		<p class="lead">
+			我们正在开发一款<strong>单人优先</strong>的回合制 RPG。当前对外代号为
+			<strong>{PROJECT_CODENAME}</strong>，{WORKING_TITLE_NOTE}。
+		</p>
+
+		<section>
+			<h2>我们在做什么</h2>
+			<p>
+				希望玩家可以按自己的节奏慢慢推进：清晰的回合策略、可读的战斗信息、以及值得反复尝试的构筑空间。多人与联网能力会服务于单人体感，而不是反过来。
+			</p>
+		</section>
+
+		<section>
+			<h2>当前阶段</h2>
+			<p>
+				项目仍在开发中。官网先用于发布开发日志、收集反馈与建立社区习惯。内测与下载通道开放时，会在「下载」页与日志中同步说明。
+			</p>
+		</section>
+
+		<section>
+			<h2>技术方向</h2>
+			<p>
+				客户端基于 Unity；在线与账号相关能力规划使用 Nakama。具体功能会随开发日志逐步公开，不会在未就绪时提前承诺上线日期。
+			</p>
+		</section>
+	</main>
+</BaseLayout>
+
+<style>
+	.page {
+		padding: 3rem 0 4rem;
+		max-width: 42rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 0.5rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--copper);
+		font-weight: 600;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 5vw, 2.8rem);
+		margin-bottom: 1rem;
+	}
+
+	.lead {
+		font-size: 1.1rem;
+		margin-bottom: 2rem;
+	}
+
+	section {
+		margin-bottom: 2rem;
+	}
+
+	h2 {
+		font-size: 1.35rem;
+	}
+</style>

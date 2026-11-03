@@ -1,0 +1,66 @@
+---
+import {
+	DISCUSSIONS_URL,
+	PROJECT_CODENAME,
+	SITE_TITLE,
+	WORKING_TITLE_NOTE,
+} from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container footer-inner">
+		<div>
+			<p class="foot-brand">{SITE_TITLE}</p>
+			<p class="foot-meta">{PROJECT_CODENAME} · {WORKING_TITLE_NOTE}</p>
+		</div>
+		<div class="foot-links">
+			<a href="/logs/">开发日志</a>
+			<a href="/community/">社区规则</a>
+			<a href={DISCUSSIONS_URL} target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
+		</div>
+		<p class="copy">© {year} {SITE_TITLE}. 保留所有权利。</p>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 4rem;
+		border-top: 1px solid var(--line);
+		padding: 2.5rem 0 3rem;
+		background: rgba(255, 255, 255, 0.35);
+	}
+
+	.footer-inner {
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.foot-brand {
+		margin: 0;
+		font-family: var(--font-display);
+		font-weight: 800;
+		font-size: 1.2rem;
+		color: var(--ink);
+	}
+
+	.foot-meta,
+	.copy {
+		margin: 0.25rem 0 0;
+		font-size: 0.88rem;
+		color: var(--ink-soft);
+	}
+
+	.foot-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.foot-links a {
+		text-decoration: none;
+		font-size: 0.92rem;
+		font-weight: 500;
+	}
+</style>

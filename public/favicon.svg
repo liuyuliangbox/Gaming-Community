@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="liuyuliangbox">
+  <rect width="64" height="64" rx="10" fill="#15202b"/>
+  <path d="M12 44 V20 H22 L32 34 L42 20 H52 V44 H44 V28 L34 40 H30 L20 28 V44 Z" fill="#eef3f7"/>
+  <circle cx="48" cy="48" r="6" fill="#b85a2a"/>
+</svg>

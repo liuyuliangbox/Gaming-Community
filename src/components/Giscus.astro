@@ -1,0 +1,60 @@
+---
+import { GISCUS } from '../consts';
+
+const ready = Boolean(GISCUS.repoId && GISCUS.categoryId);
+---
+
+<section class="giscus-wrap" aria-label="评论">
+	{
+		ready ? (
+			<script
+				is:inline
+				src="https://giscus.app/client.js"
+				data-repo={GISCUS.repo}
+				data-repo-id={GISCUS.repoId}
+				data-category={GISCUS.category}
+				data-category-id={GISCUS.categoryId}
+				data-mapping={GISCUS.mapping}
+				data-strict={GISCUS.strict}
+				data-reactions-enabled={GISCUS.reactionsEnabled}
+				data-emit-metadata={GISCUS.emitMetadata}
+				data-input-position={GISCUS.inputPosition}
+				data-theme={GISCUS.theme}
+				data-lang={GISCUS.lang}
+				data-loading="lazy"
+				crossorigin="anonymous"
+				async
+			/>
+		) : (
+			<div class="giscus-placeholder">
+				<p>评论即将接入 Giscus（基于 GitHub Discussions）。</p>
+				<p>
+					请在仓库启用 Discussions 后，到
+					<a href="https://giscus.app/zh-CN" target="_blank" rel="noopener noreferrer"
+						>giscus.app</a
+					>
+					生成配置，填入 <code>src/consts.ts</code> 中的 <code>repoId</code> 与
+					<code>categoryId</code>。
+				</p>
+			</div>
+		)
+	}
+</section>
+
+<style>
+	.giscus-wrap {
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.giscus-placeholder {
+		padding: 1.25rem 0;
+		color: var(--ink-soft);
+		font-size: 0.95rem;
+	}
+
+	.giscus-placeholder p {
+		margin-bottom: 0.5rem;
+	}
+</style>
