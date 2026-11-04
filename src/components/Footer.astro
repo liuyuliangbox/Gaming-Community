@@ -20,9 +20,7 @@ const forumCategories = getForumCategories();
 		<div class="foot-links">
 			{
 				forumCategories.length > 0 ? (
-					forumCategories.map((cat) => (
-						<a href={forumCategories.length === 1 ? '/logs/' : `/logs/#cat-${cat.id}`}>{cat.name}</a>
-					))
+					forumCategories.map((cat) => <a href={`/logs/c/${cat.id}/`}>{cat.name}</a>)
 				) : (
 					<a href="/logs/">日志</a>
 				)

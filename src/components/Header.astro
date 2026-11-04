@@ -17,9 +17,7 @@ const forumCategories = getForumCategories();
 			{
 				forumCategories.length > 0 ? (
 					forumCategories.map((cat) => (
-						<HeaderLink href={forumCategories.length === 1 ? '/logs/' : `/logs/#cat-${cat.id}`}>
-							{cat.name}
-						</HeaderLink>
+						<HeaderLink href={`/logs/c/${cat.id}/`}>{cat.name}</HeaderLink>
 					))
 				) : (
 					<HeaderLink href="/logs/">日志</HeaderLink>

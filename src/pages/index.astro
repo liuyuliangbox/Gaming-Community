@@ -14,6 +14,7 @@ import { getForumCategories, getForumPostIndex, parseForumDate } from '../lib/fo
 const categories = getForumCategories();
 const primaryCat = categories[0];
 const primaryName = primaryCat?.name || '日志';
+const primaryHref = primaryCat ? `/logs/c/${primaryCat.id}/` : '/logs/';
 const posts = getForumPostIndex().slice(0, 3);
 ---
 
@@ -25,7 +26,7 @@ const posts = getForumPostIndex().slice(0, 3);
 			<h1 class="codename fade-up-delay">{PROJECT_CODENAME}</h1>
 			<p class="tagline fade-up-delay-2">{SITE_TAGLINE}</p>
 			<div class="cta fade-up-delay-2">
-				<a class="btn btn-primary" href="/logs/">阅读{primaryName}</a>
+				<a class="btn btn-primary" href={primaryHref}>阅读{primaryName}</a>
 				<a
 					class="btn btn-ghost"
 					href={BBS_URL}
@@ -40,7 +41,7 @@ const posts = getForumPostIndex().slice(0, 3);
 	<section class="container section latest">
 		<div class="section-head">
 			<h2>最新{primaryName}</h2>
-			<a href="/logs/">查看全部</a>
+			<a href={primaryHref}>查看全部</a>
 		</div>
 		{
 			posts.length === 0 ? (
@@ -67,6 +68,7 @@ const posts = getForumPostIndex().slice(0, 3);
 										<FormattedDate date={parseForumDate(post.created_at)} />
 										{post.author_name ? <> · {post.author_name}</> : null}
 									</span>
+									{post.summary ? <span class="summary">{post.summary}</span> : null}
 								</span>
 							</a>
 						</li>
@@ -251,6 +253,16 @@ const posts = getForumPostIndex().slice(0, 3);
 	.meta {
 		font-size: 0.92rem;
 		color: var(--ink-soft);
+	}
+
+	.summary {
+		color: var(--ink-soft);
+		font-size: 0.95rem;
+		line-height: 1.55;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	@media (max-width: 720px) {

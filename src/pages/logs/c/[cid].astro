@@ -1,0 +1,171 @@
+---
+import FormattedDate from '../../../components/FormattedDate.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../../consts';
+import { getForumCategories, getForumPostIndex, parseForumDate } from '../../../lib/forum';
+
+export function getStaticPaths() {
+	return getForumCategories().map((cat) => ({
+		params: { cid: String(cat.id) },
+	}));
+}
+
+const { cid } = Astro.params;
+const category = getForumCategories().find((c) => String(c.id) === String(cid));
+if (!category) {
+	return Astro.redirect('/logs/');
+}
+
+const posts = getForumPostIndex().filter((p) => p.category_id === category.id);
+const pageTitle = category.name;
+const pageLead = category.subtitle?.trim() || '';
+---
+
+<BaseLayout title={pageTitle} description={`${SITE_TITLE} ${pageTitle} · ${SITE_DESCRIPTION}`}>
+	<main class="container page fade-up">
+		<h1>{pageTitle}</h1>
+		{pageLead ? <p class="lead">{pageLead}</p> : null}
+
+		{
+			posts.length === 0 ? (
+				<p class="empty">该栏目暂无同步内容。</p>
+			) : (
+				<ul class="log-list">
+					{posts.map((post) => (
+						<li>
+							<a href={`/logs/${post.id}/`}>
+								{post.cover_url ? (
+									<img
+										class="cover"
+										src={post.cover_url}
+										alt=""
+										loading="lazy"
+										referrerpolicy="no-referrer"
+									/>
+								) : (
+									<span class="cover cover-empty" aria-hidden="true" />
+								)}
+								<span class="body">
+									<span class="title">{post.title}</span>
+									<span class="meta">
+										<FormattedDate date={parseForumDate(post.created_at)} />
+										{post.author_name ? <> · {post.author_name}</> : null}
+									</span>
+									{post.summary ? <span class="summary">{post.summary}</span> : null}
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</main>
+</BaseLayout>
+
+<style>
+	.page {
+		padding: 3rem 0 4rem;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 5vw, 2.8rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.lead {
+		margin: 0 0 2rem;
+		max-width: 36rem;
+		color: var(--ink-soft);
+	}
+
+	.empty {
+		color: var(--ink-soft);
+	}
+
+	.log-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.log-list li {
+		border-top: 1px solid var(--line);
+	}
+
+	.log-list a {
+		display: grid;
+		grid-template-columns: 7.5rem 1fr;
+		gap: 0.85rem 1.25rem;
+		align-items: start;
+		padding: 1.15rem 0;
+		text-decoration: none;
+		color: inherit;
+		transition: padding-left 0.25s var(--ease);
+	}
+
+	.log-list a:hover {
+		padding-left: 0.35rem;
+	}
+
+	.cover {
+		width: 7.5rem;
+		height: 5.25rem;
+		object-fit: cover;
+		border-radius: 0.45rem;
+		background: rgba(28, 42, 56, 0.08);
+	}
+
+	.cover-empty {
+		display: block;
+		background:
+			linear-gradient(135deg, rgba(42, 107, 114, 0.18), rgba(184, 90, 42, 0.12)),
+			rgba(28, 42, 56, 0.06);
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		min-width: 0;
+		padding-top: 0.15rem;
+	}
+
+	.title {
+		font-family: var(--font-display);
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: var(--ink);
+		line-height: 1.3;
+	}
+
+	.meta {
+		font-size: 0.92rem;
+		color: var(--ink-soft);
+	}
+
+	.summary {
+		color: var(--ink-soft);
+		font-size: 0.95rem;
+		line-height: 1.55;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	@media (max-width: 720px) {
+		.log-list a {
+			grid-template-columns: 5.5rem 1fr;
+			gap: 0.75rem 0.9rem;
+		}
+
+		.cover {
+			width: 5.5rem;
+			height: 4rem;
+		}
+
+		.title {
+			font-size: 1.15rem;
+		}
+	}
+</style>
