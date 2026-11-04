@@ -1,13 +1,29 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { BBS_URL } from '../consts';
+import {
+	BBS_URL,
+	PROJECT_CODENAME,
+	SITE_DESCRIPTION,
+	SITE_TITLE,
+	WORKING_TITLE_NOTE,
+} from '../consts';
 
 export type ForumCategory = {
 	id: number;
 	name: string;
 	subtitle?: string;
+	sort_order?: number;
 	created_at?: string;
+};
+
+export type SiteMeta = {
+	site_brand: string;
+	project_codename: string;
+	working_title_note: string;
+	site_description: string;
+	forum_link_label: string;
+	footer_rights: string;
 };
 
 export type ForumFeaturedComment = {
@@ -37,6 +53,15 @@ export type ForumPost = ForumPostIndex & {
 
 const dataDir = path.join(process.cwd(), 'src', 'data', 'forum');
 
+const DEFAULT_SITE_META: SiteMeta = {
+	site_brand: SITE_TITLE,
+	project_codename: PROJECT_CODENAME,
+	working_title_note: WORKING_TITLE_NOTE,
+	site_description: SITE_DESCRIPTION,
+	forum_link_label: 'bbs.aridjaya.eu.org',
+	footer_rights: '保留所有权利。',
+};
+
 function readJson<T>(filePath: string, fallback: T): T {
 	try {
 		return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T;
@@ -45,8 +70,28 @@ function readJson<T>(filePath: string, fallback: T): T {
 	}
 }
 
+export function getSiteMeta(): SiteMeta {
+	const raw = readJson<Partial<SiteMeta>>(path.join(dataDir, 'site-meta.json'), {});
+	return {
+		site_brand: String(raw.site_brand || DEFAULT_SITE_META.site_brand),
+		project_codename: String(raw.project_codename || DEFAULT_SITE_META.project_codename),
+		working_title_note: String(raw.working_title_note || DEFAULT_SITE_META.working_title_note),
+		site_description: String(raw.site_description || DEFAULT_SITE_META.site_description),
+		forum_link_label: String(raw.forum_link_label || DEFAULT_SITE_META.forum_link_label),
+		footer_rights: String(raw.footer_rights || DEFAULT_SITE_META.footer_rights),
+	};
+}
+
 export function getForumCategories(): ForumCategory[] {
-	return readJson<ForumCategory[]>(path.join(dataDir, 'categories.json'), []);
+	const list = readJson<ForumCategory[]>(path.join(dataDir, 'categories.json'), []);
+	return [...list].sort(
+		(a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) || Number(a.id) - Number(b.id)
+	);
+}
+
+export function findForumCategoryByNames(...names: string[]): ForumCategory | undefined {
+	const wanted = new Set(names.map((n) => n.trim()).filter(Boolean));
+	return getForumCategories().find((c) => wanted.has(c.name));
 }
 
 export function getForumPostIndex(): ForumPostIndex[] {
@@ -55,6 +100,11 @@ export function getForumPostIndex(): ForumPostIndex[] {
 		if (!!b.is_pinned !== !!a.is_pinned) return b.is_pinned ? 1 : -1;
 		return new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf();
 	});
+}
+
+export function getForumPostsByCategory(categoryId: number | string): ForumPostIndex[] {
+	const id = Number(categoryId);
+	return getForumPostIndex().filter((p) => Number(p.category_id) === id);
 }
 
 export function getForumPost(id: number | string): ForumPost | null {
@@ -78,60 +128,51 @@ export function absolutizeForumUrl(url: string): string {
 }
 
 /** First markdown/HTML image in post body (same idea as forum list cover). */
-export function extractCoverUrl(markdown: string): string | null {
-	const mdMatch = markdown.match(/!\[[^\]]*\]\(([^)\s]+)\)/i);
-	const htmlMatch = markdown.match(/<img[^>]+src=["']([^"']+)["']/i);
+export function extractForumCoverUrl(markdown: string): string | null {
+	const mdMatch = String(markdown || '').match(/!\[[^\]]*\]\(([^)\s]+)\)/i);
+	const htmlMatch = String(markdown || '').match(/<img[^>]+src=["']([^"']+)["']/i);
 	const raw = mdMatch?.[1] || htmlMatch?.[1] || '';
 	if (!raw) return null;
 	return absolutizeForumUrl(raw);
 }
 
-export function parseForumDate(value: string): Date {
-	const normalized = value.includes('T') ? value : value.replace(' ', 'T') + 'Z';
-	const d = new Date(normalized);
-	return Number.isNaN(d.valueOf()) ? new Date(value) : d;
-}
-
-/** Mask username: keep first char, rest as *. */
-export function maskUsername(name: string | undefined | null): string {
-	const chars = [...String(name || '').trim()];
-	if (!chars.length) return '*';
-	if (chars.length === 1) return `${chars[0]}*`;
-	return chars[0] + '*'.repeat(chars.length - 1);
-}
-
-/** Deterministic identicon (same idea as CForum generateIdenticonSvg). */
-export function identiconDataUri(seed: string): string {
-	const hash = createHash('sha1').update(String(seed || 'user')).digest();
-	const r = hash[0];
-	const g = hash[1];
-	const b = hash[2];
-	const color = `rgb(${r},${g},${b})`;
-	const bg = '#eef3f7';
-	const rects: string[] = [];
-	let idx = 3;
-	for (let row = 0; row < 5; row++) {
-		const rowData: boolean[] = [];
-		for (let col = 0; col < 3; col++) {
-			rowData.push(hash[idx % hash.length] % 2 === 0);
-			idx++;
-		}
-		const cells = [rowData[0], rowData[1], rowData[2], rowData[1], rowData[0]];
-		for (let col = 0; col < 5; col++) {
-			if (cells[col]) {
-				rects.push(`<rect x="${col * 10}" y="${row * 10}" width="10" height="10" fill="${color}"/>`);
-			}
-		}
-	}
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 50 50"><rect width="50" height="50" fill="${bg}"/>${rects.join('')}</svg>`;
-	return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+export function parseForumDate(dateString: string | undefined | null): Date {
+	if (!dateString) return new Date();
+	const ms = Date.parse(dateString.endsWith('Z') ? dateString : `${dateString}Z`);
+	return Number.isNaN(ms) ? new Date() : new Date(ms);
 }
 
 export function decodeForumHtml(text: string): string {
 	return String(text || '')
+		.replace(/&amp;/g, '&')
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')
 		.replace(/&quot;/g, '"')
-		.replace(/&#039;/g, "'")
-		.replace(/&amp;/g, '&');
+		.replace(/&#039;/g, "'");
+}
+
+export function maskUsername(name: string | undefined | null): string {
+	const s = String(name || '').trim();
+	if (!s) return '玩家';
+	if (s.length <= 2) return `${s[0] || '*'}*`;
+	return `${s[0]}${'*'.repeat(Math.min(4, s.length - 2))}${s[s.length - 1]}`;
+}
+
+/** Deterministic identicon (same idea as CForum generateIdenticonSvg). */
+export function identiconDataUri(seed: string): string {
+	const hash = createHash('sha256').update(String(seed || 'guest')).digest();
+	const color = `rgb(${hash[0] % 200},${hash[1] % 200},${hash[2] % 200})`;
+	const cells: string[] = [];
+	for (let y = 0; y < 5; y++) {
+		for (let x = 0; x < 5; x++) {
+			const bit = hash[(y * 5 + x) % hash.length] & 1;
+			if (bit) {
+				cells.push(
+					`<rect x="${x * 10}" y="${y * 10}" width="10" height="10" fill="${color}" />`
+				);
+			}
+		}
+	}
+	const svg = `<svg width="100" height="100" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"> <rect width="50" height="50" fill="#f0f0f0" /> ${cells.join('')} </svg>`;
+	return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }

@@ -9,6 +9,15 @@ const postsDir = path.join(outDir, 'posts');
 
 const FORUM_API_BASE = (process.env.FORUM_API_BASE || 'https://bbs.aridjaya.eu.org').replace(/\/+$/, '');
 
+const DEFAULT_SITE_META = {
+	site_brand: 'liuyuliangbox',
+	project_codename: 'Project Turn',
+	working_title_note: '正式名称待定 / Working Title',
+	site_description: '单人优先的回合制 RPG。开发日志、社区反馈与内测资讯。正式名称待定。',
+	forum_link_label: 'bbs.aridjaya.eu.org',
+	footer_rights: '保留所有权利。'
+};
+
 async function fetchJson(url) {
 	const res = await fetch(url, {
 		headers: { Accept: 'application/json' },
@@ -37,29 +46,46 @@ function extractCoverUrl(markdown) {
 	return absolutizeForumUrl(raw);
 }
 
+async function ensurePlaceholders() {
+	await fs.mkdir(postsDir, { recursive: true });
+	const catsPath = path.join(outDir, 'categories.json');
+	const indexPath = path.join(outDir, 'posts-index.json');
+	const metaPath = path.join(outDir, 'site-meta.json');
+	try {
+		await fs.access(catsPath);
+		await fs.access(indexPath);
+	} catch {
+		await fs.writeFile(catsPath, '[]\n', 'utf8');
+		await fs.writeFile(indexPath, '[]\n', 'utf8');
+		console.warn('No cached forum data; wrote empty placeholders');
+	}
+	try {
+		await fs.access(metaPath);
+	} catch {
+		await fs.writeFile(metaPath, JSON.stringify(DEFAULT_SITE_META, null, 2) + '\n', 'utf8');
+	}
+}
+
 async function main() {
 	if (process.env.SKIP_FORUM_SYNC === '1') {
 		console.log('SKIP_FORUM_SYNC=1 — keeping existing forum data');
-		await fs.mkdir(postsDir, { recursive: true });
-		const catsPath = path.join(outDir, 'categories.json');
-		const indexPath = path.join(outDir, 'posts-index.json');
-		try {
-			await fs.access(catsPath);
-			await fs.access(indexPath);
-			return;
-		} catch {
-			await fs.writeFile(catsPath, '[]\n', 'utf8');
-			await fs.writeFile(indexPath, '[]\n', 'utf8');
-			console.warn('No cached forum data; wrote empty placeholders');
-			return;
-		}
+		await ensurePlaceholders();
+		return;
 	}
 
 	console.log(`Syncing forum export from ${FORUM_API_BASE}`);
 	await fs.mkdir(postsDir, { recursive: true });
 
-	const categories = await fetchJson(`${FORUM_API_BASE}/api/export/site-categories`);
-	const { posts = [] } = await fetchJson(`${FORUM_API_BASE}/api/export/site-posts?limit=200&offset=0`);
+	const [categories, postsPayload, siteMeta] = await Promise.all([
+		fetchJson(`${FORUM_API_BASE}/api/export/site-categories`),
+		fetchJson(`${FORUM_API_BASE}/api/export/site-posts?limit=200&offset=0`),
+		fetchJson(`${FORUM_API_BASE}/api/export/site-meta`).catch(() => ({ ...DEFAULT_SITE_META }))
+	]);
+	const { posts = [] } = postsPayload || {};
+
+	const sortedCategories = [...(categories || [])].sort(
+		(a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) || Number(a.id) - Number(b.id)
+	);
 
 	const index = [];
 	for (const post of posts) {
@@ -109,9 +135,11 @@ async function main() {
 		}
 	}
 
-	await fs.writeFile(path.join(outDir, 'categories.json'), JSON.stringify(categories, null, 2) + '\n', 'utf8');
+	const meta = { ...DEFAULT_SITE_META, ...(siteMeta || {}) };
+	await fs.writeFile(path.join(outDir, 'categories.json'), JSON.stringify(sortedCategories, null, 2) + '\n', 'utf8');
 	await fs.writeFile(path.join(outDir, 'posts-index.json'), JSON.stringify(index, null, 2) + '\n', 'utf8');
-	console.log(`Synced ${categories.length} categories, ${index.length} posts`);
+	await fs.writeFile(path.join(outDir, 'site-meta.json'), JSON.stringify(meta, null, 2) + '\n', 'utf8');
+	console.log(`Synced ${sortedCategories.length} categories, ${index.length} posts, site-meta`);
 }
 
 main().catch((err) => {

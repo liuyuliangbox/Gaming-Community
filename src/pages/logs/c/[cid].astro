@@ -1,8 +1,15 @@
 ---
 import FormattedDate from '../../../components/FormattedDate.astro';
+import LogPostDetail from '../../../components/LogPostDetail.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../../consts';
-import { getForumCategories, getForumPostIndex, parseForumDate } from '../../../lib/forum';
+import { SITE_TITLE } from '../../../consts';
+import {
+	getForumCategories,
+	getForumPost,
+	getForumPostsByCategory,
+	getSiteMeta,
+	parseForumDate,
+} from '../../../lib/forum';
 
 export function getStaticPaths() {
 	return getForumCategories().map((cat) => ({
@@ -16,53 +23,69 @@ if (!category) {
 	return Astro.redirect('/logs/');
 }
 
-const posts = getForumPostIndex().filter((p) => p.category_id === category.id);
+const posts = getForumPostsByCategory(category.id);
 const pageTitle = category.name;
 const pageLead = category.subtitle?.trim() || '';
+const meta = getSiteMeta();
+const pageDescription = `${meta.site_brand || SITE_TITLE} ${pageTitle} · ${meta.site_description}`;
+
+const singlePost = posts.length === 1 ? getForumPost(posts[0].id) : null;
 ---
 
-<BaseLayout title={pageTitle} description={`${SITE_TITLE} ${pageTitle} · ${SITE_DESCRIPTION}`}>
-	<main class="container page fade-up">
-		<h1>{pageTitle}</h1>
-		{pageLead ? <p class="lead">{pageLead}</p> : null}
+{
+	singlePost ? (
+		<BaseLayout title={singlePost.title} description={singlePost.summary || singlePost.title}>
+			<main class="container log-main">
+				<LogPostDetail post={singlePost} eyebrow={category.name} />
+			</main>
+		</BaseLayout>
+	) : (
+		<BaseLayout title={pageTitle} description={pageDescription}>
+			<main class="container page fade-up">
+				<h1>{pageTitle}</h1>
+				{pageLead ? <p class="lead">{pageLead}</p> : null}
 
-		{
-			posts.length === 0 ? (
-				<p class="empty">该栏目暂无同步内容。</p>
-			) : (
-				<ul class="log-list">
-					{posts.map((post) => (
-						<li>
-							<p class="meta">
-								<FormattedDate date={parseForumDate(post.created_at)} />
-								{post.author_name ? <> · {post.author_name}</> : null}
-							</p>
-							<a href={`/logs/${post.id}/`}>
-								{post.cover_url ? (
-									<img
-										class="cover"
-										src={post.cover_url}
-										alt=""
-										loading="lazy"
-										referrerpolicy="no-referrer"
-									/>
-								) : (
-									<span class="cover cover-empty" aria-hidden="true" />
-								)}
-								<span class="body">
-									<span class="title">{post.title}</span>
-									{post.summary ? <span class="summary">{post.summary}</span> : null}
-								</span>
-							</a>
-						</li>
-					))}
-				</ul>
-			)
-		}
-	</main>
-</BaseLayout>
+				{posts.length === 0 ? (
+					<p class="empty">该栏目暂无同步内容。</p>
+				) : (
+					<ul class="log-list">
+						{posts.map((post) => (
+							<li>
+								<p class="meta">
+									<FormattedDate date={parseForumDate(post.created_at)} />
+									{post.author_name ? <> · {post.author_name}</> : null}
+								</p>
+								<a href={`/logs/${post.id}/`}>
+									{post.cover_url ? (
+										<img
+											class="cover"
+											src={post.cover_url}
+											alt=""
+											loading="lazy"
+											referrerpolicy="no-referrer"
+										/>
+									) : (
+										<span class="cover cover-empty" aria-hidden="true" />
+									)}
+									<span class="body">
+										<span class="title">{post.title}</span>
+										{post.summary ? <span class="summary">{post.summary}</span> : null}
+									</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+			</main>
+		</BaseLayout>
+	)
+}
 
 <style>
+	.log-main {
+		padding: 2.5rem 0 4rem;
+	}
+
 	.page {
 		padding: 3rem 0 4rem;
 	}

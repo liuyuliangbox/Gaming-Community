@@ -1,16 +1,16 @@
 ---
-import { PROJECT_CODENAME, SITE_TITLE } from '../consts';
-import { getForumCategories } from '../lib/forum';
+import { getForumCategories, getSiteMeta } from '../lib/forum';
 import HeaderLink from './HeaderLink.astro';
 
+const meta = getSiteMeta();
 const forumCategories = getForumCategories();
 ---
 
 <header class="site-header">
 	<nav class="container nav">
 		<a class="brand" href="/">
-			<span class="brand-name">{SITE_TITLE}</span>
-			<span class="brand-code">{PROJECT_CODENAME}</span>
+			<span class="brand-name">{meta.site_brand}</span>
+			<span class="brand-code">{meta.project_codename}</span>
 		</a>
 		<div class="links">
 			<HeaderLink href="/">首页</HeaderLink>
@@ -23,9 +23,6 @@ const forumCategories = getForumCategories();
 					<HeaderLink href="/logs/">日志</HeaderLink>
 				)
 			}
-			<HeaderLink href="/about/">关于</HeaderLink>
-			<HeaderLink href="/community/">社区</HeaderLink>
-			<HeaderLink href="/download/">下载</HeaderLink>
 		</div>
 	</nav>
 </header>

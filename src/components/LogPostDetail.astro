@@ -1,0 +1,228 @@
+---
+import { marked } from 'marked';
+import FormattedDate from './FormattedDate.astro';
+import Giscus from './Giscus.astro';
+import { BBS_URL } from '../consts';
+import {
+	absolutizeForumMedia,
+	decodeForumHtml,
+	identiconDataUri,
+	maskUsername,
+	parseForumDate,
+	type ForumPost,
+} from '../lib/forum';
+
+interface Props {
+	post: ForumPost;
+	/** Override eyebrow (defaults to category name) */
+	eyebrow?: string;
+}
+
+const { post, eyebrow } = Astro.props;
+const html = marked.parse(absolutizeForumMedia(post.content || ''), { async: false }) as string;
+const pubDate = parseForumDate(post.created_at);
+const featuredComments = (post.featured_comments || []).map((c) => {
+	const seed = String(c.author_name || c.id || 'guest');
+	return {
+		...c,
+		displayName: maskUsername(c.author_name),
+		avatar: c.author_avatar || identiconDataUri(seed),
+		text: decodeForumHtml(c.content || ''),
+	};
+});
+---
+
+<article class="log-article fade-up">
+	<header class="log-head">
+		<p class="eyebrow">{eyebrow || post.category_name || '日志'}</p>
+		<h1>{post.title}</h1>
+		<p class="meta">
+			<FormattedDate date={pubDate} />
+			{post.author_name ? <> · {post.author_name}</> : null}
+		</p>
+		{post.summary ? <p class="desc">{post.summary}</p> : null}
+	</header>
+	<div class="prose" set:html={html} />
+
+	<section class="featured-comments" aria-labelledby="featured-comments-title">
+		<h2 id="featured-comments-title">社区精选评论</h2>
+		{
+			featuredComments.length === 0 ? (
+				<p class="featured-empty">暂无社区精选评论。</p>
+			) : (
+				<ul class="comment-list">
+					{featuredComments.map((c) => (
+						<li class="comment-item">
+							<img class="avatar" src={c.avatar} alt="" width="40" height="40" loading="lazy" />
+							<div class="comment-body">
+								<div class="comment-meta">
+									<span class="name">{c.displayName}</span>
+									<span class="dot">·</span>
+									<span class="when">
+										<FormattedDate date={parseForumDate(c.created_at)} />
+									</span>
+								</div>
+								<p class="comment-text">{c.text}</p>
+							</div>
+						</li>
+					))}
+				</ul>
+			)
+		}
+		<p class="forum-cta">
+			<a href={`${BBS_URL}/post?id=${post.id}`} target="_blank" rel="noopener noreferrer"
+				>在社区查看更多讨论</a
+			>
+		</p>
+	</section>
+	<Giscus />
+</article>
+
+<style>
+	.log-article {
+		max-width: 42rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 0.5rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--copper);
+		font-weight: 600;
+	}
+
+	.log-head h1 {
+		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.meta {
+		font-size: 0.92rem;
+		color: var(--ink-soft);
+		margin-bottom: 0.75rem;
+	}
+
+	.desc {
+		font-size: 1.05rem;
+		margin-bottom: 0;
+	}
+
+	.prose {
+		margin-top: 2rem;
+	}
+
+	.prose :global(h2) {
+		margin-top: 2rem;
+		font-size: 1.45rem;
+	}
+
+	.prose :global(p),
+	.prose :global(ul),
+	.prose :global(ol) {
+		line-height: 1.75;
+		color: var(--ink);
+	}
+
+	.prose :global(img) {
+		max-width: 100%;
+		border-radius: 0.5rem;
+	}
+
+	.prose :global(a) {
+		color: var(--copper);
+	}
+
+	.featured-comments {
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.featured-comments h2 {
+		margin: 0 0 1.25rem;
+		font-size: 1.25rem;
+		font-family: var(--font-display);
+	}
+
+	.featured-empty {
+		margin: 0 0 1.5rem;
+		color: var(--ink-soft);
+		font-size: 0.95rem;
+	}
+
+	.comment-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 1rem;
+	}
+
+	.comment-item {
+		display: grid;
+		grid-template-columns: 2.5rem 1fr;
+		gap: 0.85rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--line);
+		border-radius: 0.75rem;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.28)),
+			rgba(238, 243, 247, 0.35);
+	}
+
+	.avatar {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		object-fit: cover;
+		background: rgba(28, 42, 56, 0.08);
+	}
+
+	.comment-body {
+		min-width: 0;
+	}
+
+	.comment-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.35rem 0.45rem;
+		margin-bottom: 0.4rem;
+		font-size: 0.85rem;
+		color: var(--ink-soft);
+	}
+
+	.name {
+		font-weight: 600;
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.comment-text {
+		margin: 0;
+		white-space: pre-wrap;
+		line-height: 1.65;
+		color: var(--ink);
+		font-size: 0.98rem;
+	}
+
+	.forum-cta {
+		margin: 1.75rem 0 0;
+	}
+
+	.forum-cta a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--copper);
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.2s var(--ease);
+	}
+
+	.forum-cta a:hover {
+		border-bottom-color: var(--copper);
+	}
+</style>

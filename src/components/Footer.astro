@@ -1,21 +1,17 @@
 ---
-import {
-	BBS_URL,
-	PROJECT_CODENAME,
-	SITE_TITLE,
-	WORKING_TITLE_NOTE,
-} from '../consts';
-import { getForumCategories } from '../lib/forum';
+import { BBS_URL } from '../consts';
+import { getForumCategories, getSiteMeta } from '../lib/forum';
 
 const year = new Date().getFullYear();
+const meta = getSiteMeta();
 const forumCategories = getForumCategories();
 ---
 
 <footer class="site-footer">
 	<div class="container footer-inner">
 		<div>
-			<p class="foot-brand">{SITE_TITLE}</p>
-			<p class="foot-meta">{PROJECT_CODENAME} · {WORKING_TITLE_NOTE}</p>
+			<p class="foot-brand">{meta.site_brand}</p>
+			<p class="foot-meta">{meta.project_codename} · {meta.working_title_note}</p>
 		</div>
 		<div class="foot-links">
 			{
@@ -25,10 +21,9 @@ const forumCategories = getForumCategories();
 					<a href="/logs/">日志</a>
 				)
 			}
-			<a href="/community/">社区规则</a>
-			<a href={BBS_URL} target="_blank" rel="noopener noreferrer">bbs.aridjaya.eu.org</a>
+			<a href={BBS_URL} target="_blank" rel="noopener noreferrer">{meta.forum_link_label}</a>
 		</div>
-		<p class="copy">© {year} {SITE_TITLE}. 保留所有权利。</p>
+		<p class="copy">© {year} {meta.site_brand}. {meta.footer_rights}</p>
 	</div>
 </footer>
 

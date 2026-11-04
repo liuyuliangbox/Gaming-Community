@@ -1,16 +1,10 @@
 ---
 import FormattedDate from '../components/FormattedDate.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import {
-	BBS_URL,
-	PROJECT_CODENAME,
-	SITE_DESCRIPTION,
-	SITE_TAGLINE,
-	SITE_TITLE,
-	WORKING_TITLE_NOTE,
-} from '../consts';
-import { getForumCategories, getForumPostIndex, parseForumDate } from '../lib/forum';
+import { BBS_URL } from '../consts';
+import { getForumCategories, getForumPostIndex, getSiteMeta, parseForumDate } from '../lib/forum';
 
+const meta = getSiteMeta();
 const categories = getForumCategories();
 const primaryCat = categories[0];
 const primaryName = primaryCat?.name || '日志';
@@ -18,13 +12,13 @@ const primaryHref = primaryCat ? `/logs/c/${primaryCat.id}/` : '/logs/';
 const posts = getForumPostIndex().slice(0, 3);
 ---
 
-<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<BaseLayout title={meta.site_brand} description={meta.site_description}>
 	<section class="hero">
 		<div class="hero-plane" aria-hidden="true"></div>
 		<div class="container hero-inner">
-			<p class="studio fade-up">{SITE_TITLE}</p>
-			<h1 class="codename fade-up-delay">{PROJECT_CODENAME}</h1>
-			<p class="tagline fade-up-delay-2">{SITE_TAGLINE}</p>
+			<p class="studio fade-up">{meta.site_brand}</p>
+			<h1 class="codename fade-up-delay">{meta.project_codename}</h1>
+			<p class="tagline fade-up-delay-2">{meta.working_title_note}</p>
 			<div class="cta fade-up-delay-2">
 				<a class="btn btn-primary" href={primaryHref}>阅读{primaryName}</a>
 				<a
@@ -34,7 +28,6 @@ const posts = getForumPostIndex().slice(0, 3);
 					rel="noopener noreferrer">加入讨论</a
 				>
 			</div>
-			<p class="note fade-up-delay-2">{WORKING_TITLE_NOTE}</p>
 		</div>
 	</section>
 
