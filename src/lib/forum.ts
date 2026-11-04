@@ -5,6 +5,7 @@ import { BBS_URL } from '../consts';
 export type ForumCategory = {
 	id: number;
 	name: string;
+	subtitle?: string;
 	created_at?: string;
 };
 
@@ -17,6 +18,7 @@ export type ForumPostIndex = {
 	author_name?: string;
 	is_pinned?: boolean;
 	created_at: string;
+	cover_url?: string | null;
 };
 
 export type ForumPost = ForumPostIndex & {
@@ -55,6 +57,23 @@ export function absolutizeForumMedia(markdown: string): string {
 	return markdown
 		.replace(/\]\(\/r2\//g, `](${BBS_URL}/r2/`)
 		.replace(/src=["']\/r2\//g, `src="${BBS_URL}/r2/`);
+}
+
+export function absolutizeForumUrl(url: string): string {
+	if (!url) return '';
+	if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+	if (url.startsWith('/r2/')) return `${BBS_URL}${url}`;
+	if (url.startsWith('/')) return `${BBS_URL}${url}`;
+	return `${BBS_URL}/r2/${url.replace(/^\/+/, '')}`;
+}
+
+/** First markdown/HTML image in post body (same idea as forum list cover). */
+export function extractCoverUrl(markdown: string): string | null {
+	const mdMatch = markdown.match(/!\[[^\]]*\]\(([^)\s]+)\)/i);
+	const htmlMatch = markdown.match(/<img[^>]+src=["']([^"']+)["']/i);
+	const raw = mdMatch?.[1] || htmlMatch?.[1] || '';
+	if (!raw) return null;
+	return absolutizeForumUrl(raw);
 }
 
 export function parseForumDate(value: string): Date {

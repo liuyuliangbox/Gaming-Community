@@ -21,6 +21,22 @@ async function fetchJson(url) {
 	return res.json();
 }
 
+function absolutizeForumUrl(url) {
+	if (!url) return '';
+	if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+	if (url.startsWith('/r2/')) return `${FORUM_API_BASE}${url}`;
+	if (url.startsWith('/')) return `${FORUM_API_BASE}${url}`;
+	return `${FORUM_API_BASE}/r2/${url.replace(/^\/+/, '')}`;
+}
+
+function extractCoverUrl(markdown) {
+	const mdMatch = String(markdown || '').match(/!\[[^\]]*\]\(([^)\s]+)\)/i);
+	const htmlMatch = String(markdown || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+	const raw = mdMatch?.[1] || htmlMatch?.[1] || '';
+	if (!raw) return null;
+	return absolutizeForumUrl(raw);
+}
+
 async function main() {
 	if (process.env.SKIP_FORUM_SYNC === '1') {
 		console.log('SKIP_FORUM_SYNC=1 — keeping existing forum data');
@@ -48,6 +64,7 @@ async function main() {
 	const index = [];
 	for (const post of posts) {
 		const detail = await fetchJson(`${FORUM_API_BASE}/api/export/site-posts/${post.id}`);
+		const cover_url = extractCoverUrl(detail.content || '');
 		const record = {
 			id: detail.id,
 			title: detail.title,
@@ -57,7 +74,8 @@ async function main() {
 			category_name: detail.category_name,
 			author_name: detail.author_name,
 			is_pinned: !!detail.is_pinned,
-			created_at: detail.created_at
+			created_at: detail.created_at,
+			cover_url
 		};
 		await fs.writeFile(path.join(postsDir, `${record.id}.json`), JSON.stringify(record, null, 2) + '\n', 'utf8');
 		index.push({
@@ -68,11 +86,11 @@ async function main() {
 			category_name: record.category_name,
 			author_name: record.author_name,
 			is_pinned: record.is_pinned,
-			created_at: record.created_at
+			created_at: record.created_at,
+			cover_url: record.cover_url
 		});
 	}
 
-	// Remove stale post files
 	const existing = await fs.readdir(postsDir);
 	const keep = new Set(index.map((p) => `${p.id}.json`));
 	for (const file of existing) {

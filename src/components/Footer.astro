@@ -5,8 +5,10 @@ import {
 	SITE_TITLE,
 	WORKING_TITLE_NOTE,
 } from '../consts';
+import { getForumCategories } from '../lib/forum';
 
 const year = new Date().getFullYear();
+const forumCategories = getForumCategories();
 ---
 
 <footer class="site-footer">
@@ -16,7 +18,15 @@ const year = new Date().getFullYear();
 			<p class="foot-meta">{PROJECT_CODENAME} · {WORKING_TITLE_NOTE}</p>
 		</div>
 		<div class="foot-links">
-			<a href="/logs/">开发日志</a>
+			{
+				forumCategories.length > 0 ? (
+					forumCategories.map((cat) => (
+						<a href={forumCategories.length === 1 ? '/logs/' : `/logs/#cat-${cat.id}`}>{cat.name}</a>
+					))
+				) : (
+					<a href="/logs/">日志</a>
+				)
+			}
 			<a href="/community/">社区规则</a>
 			<a href={BBS_URL} target="_blank" rel="noopener noreferrer">bbs.aridjaya.eu.org</a>
 		</div>
@@ -38,29 +48,33 @@ const year = new Date().getFullYear();
 	}
 
 	.foot-brand {
-		margin: 0;
 		font-family: var(--font-display);
 		font-weight: 800;
-		font-size: 1.2rem;
-		color: var(--ink);
+		font-size: 1.1rem;
+		margin: 0;
 	}
 
-	.foot-meta,
-	.copy {
-		margin: 0.25rem 0 0;
-		font-size: 0.88rem;
+	.foot-meta {
+		margin: 0.35rem 0 0;
+		font-size: 0.85rem;
 		color: var(--ink-soft);
 	}
 
 	.foot-links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 1rem;
+		gap: 0.75rem 1.25rem;
 	}
 
 	.foot-links a {
 		text-decoration: none;
+		font-weight: 600;
 		font-size: 0.92rem;
-		font-weight: 500;
+	}
+
+	.copy {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--ink-soft);
 	}
 </style>

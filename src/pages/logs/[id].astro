@@ -31,7 +31,7 @@ const pubDate = parseForumDate(post.created_at);
 	<main class="container log-main">
 		<article class="log-article fade-up">
 			<header class="log-head">
-				<p class="eyebrow">开发日志{post.category_name ? ` · ${post.category_name}` : ''}</p>
+				<p class="eyebrow">{post.category_name || '日志'}</p>
 				<h1>{post.title}</h1>
 				<p class="meta">
 					<FormattedDate date={pubDate} />

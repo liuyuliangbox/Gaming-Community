@@ -6,6 +6,11 @@ import { getForumCategories, getForumPostIndex, parseForumDate } from '../../lib
 
 const categories = getForumCategories();
 const posts = getForumPostIndex();
+const primary = categories[0];
+const pageTitle = primary?.name || '日志';
+const pageLead = primary?.subtitle?.trim() || '';
+const multi = categories.length > 1;
+
 const grouped = categories.map((cat) => ({
 	...cat,
 	posts: posts.filter((p) => p.category_id === cat.id),
@@ -13,29 +18,48 @@ const grouped = categories.map((cat) => ({
 const uncategorized = posts.filter((p) => !p.category_id);
 ---
 
-<BaseLayout title="开发日志" description={`${SITE_TITLE} 开发日志 · ${SITE_DESCRIPTION}`}>
+<BaseLayout title={pageTitle} description={`${SITE_TITLE} ${pageTitle} · ${SITE_DESCRIPTION}`}>
 	<main class="container page fade-up">
-		<p class="eyebrow">Dev Log</p>
-		<h1>开发日志</h1>
-		<p class="lead">进度同步自论坛公开栏目，构建时生成静态页。</p>
+		{
+			!multi ? (
+				<>
+					<h1>{pageTitle}</h1>
+					{pageLead ? <p class="lead">{pageLead}</p> : null}
+				</>
+			) : null
+		}
 
 		{
 			posts.length === 0 ? (
 				<p class="empty">暂无同步内容。请确认论坛栏目已开启「官网展示」，并重新构建官网。</p>
-			) : categories.length > 1 ? (
+			) : multi ? (
 				grouped.map((group) =>
 					group.posts.length ? (
-						<section class="cat-block">
-							<h2>{group.name}</h2>
+						<section class="cat-block" id={`cat-${group.id}`}>
+							<h1>{group.name}</h1>
+							{group.subtitle?.trim() ? <p class="lead">{group.subtitle}</p> : null}
 							<ul class="log-list">
 								{group.posts.map((post) => (
 									<li>
 										<a href={`/logs/${post.id}/`}>
-											<span class="date">
-												<FormattedDate date={parseForumDate(post.created_at)} />
+											{post.cover_url ? (
+												<img
+													class="cover"
+													src={post.cover_url}
+													alt=""
+													loading="lazy"
+													referrerpolicy="no-referrer"
+												/>
+											) : (
+												<span class="cover cover-empty" aria-hidden="true" />
+											)}
+											<span class="body">
+												<span class="title">{post.title}</span>
+												<span class="meta">
+													<FormattedDate date={parseForumDate(post.created_at)} />
+													{post.author_name ? <> · {post.author_name}</> : null}
+												</span>
 											</span>
-											<span class="title">{post.title}</span>
-											<span class="summary">{post.summary}</span>
 										</a>
 									</li>
 								))}
@@ -48,11 +72,24 @@ const uncategorized = posts.filter((p) => !p.category_id);
 					{posts.map((post) => (
 						<li>
 							<a href={`/logs/${post.id}/`}>
-								<span class="date">
-									<FormattedDate date={parseForumDate(post.created_at)} />
+								{post.cover_url ? (
+									<img
+										class="cover"
+										src={post.cover_url}
+										alt=""
+										loading="lazy"
+										referrerpolicy="no-referrer"
+									/>
+								) : (
+									<span class="cover cover-empty" aria-hidden="true" />
+								)}
+								<span class="body">
+									<span class="title">{post.title}</span>
+									<span class="meta">
+										<FormattedDate date={parseForumDate(post.created_at)} />
+										{post.author_name ? <> · {post.author_name}</> : null}
+									</span>
 								</span>
-								<span class="title">{post.title}</span>
-								<span class="summary">{post.summary}</span>
 							</a>
 						</li>
 					))}
@@ -61,18 +98,31 @@ const uncategorized = posts.filter((p) => !p.category_id);
 		}
 
 		{
-			uncategorized.length > 0 && categories.length > 1 ? (
-				<section class="cat-block">
-					<h2>未分类</h2>
+			uncategorized.length > 0 && multi ? (
+				<section class="cat-block" id="cat-uncategorized">
+					<h1>未分类</h1>
 					<ul class="log-list">
 						{uncategorized.map((post) => (
 							<li>
 								<a href={`/logs/${post.id}/`}>
-									<span class="date">
-										<FormattedDate date={parseForumDate(post.created_at)} />
+									{post.cover_url ? (
+										<img
+											class="cover"
+											src={post.cover_url}
+											alt=""
+											loading="lazy"
+											referrerpolicy="no-referrer"
+										/>
+									) : (
+										<span class="cover cover-empty" aria-hidden="true" />
+									)}
+									<span class="body">
+										<span class="title">{post.title}</span>
+										<span class="meta">
+											<FormattedDate date={parseForumDate(post.created_at)} />
+											{post.author_name ? <> · {post.author_name}</> : null}
+										</span>
 									</span>
-									<span class="title">{post.title}</span>
-									<span class="summary">{post.summary}</span>
 								</a>
 							</li>
 						))}
@@ -88,23 +138,15 @@ const uncategorized = posts.filter((p) => !p.category_id);
 		padding: 3rem 0 4rem;
 	}
 
-	.eyebrow {
-		margin: 0 0 0.5rem;
-		font-size: 0.8rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--copper);
-		font-weight: 600;
-	}
-
 	h1 {
 		font-size: clamp(2rem, 5vw, 2.8rem);
 		margin-bottom: 0.75rem;
 	}
 
 	.lead {
-		margin-bottom: 2rem;
+		margin: 0 0 2rem;
 		max-width: 36rem;
+		color: var(--ink-soft);
 	}
 
 	.empty {
@@ -112,12 +154,12 @@ const uncategorized = posts.filter((p) => !p.category_id);
 	}
 
 	.cat-block {
-		margin-bottom: 2.5rem;
+		margin-bottom: 3rem;
+		scroll-margin-top: 5rem;
 	}
 
-	.cat-block h2 {
-		font-size: 1.25rem;
-		margin-bottom: 0.75rem;
+	.cat-block .lead {
+		margin-bottom: 1.25rem;
 	}
 
 	.log-list {
@@ -132,24 +174,40 @@ const uncategorized = posts.filter((p) => !p.category_id);
 
 	.log-list a {
 		display: grid;
-		grid-template-columns: 9rem 1fr;
-		gap: 0.35rem 1.25rem;
-		padding: 1.25rem 0;
+		grid-template-columns: 7.5rem 1fr;
+		gap: 0.85rem 1.25rem;
+		align-items: start;
+		padding: 1.15rem 0;
 		text-decoration: none;
 		color: inherit;
 		transition: padding-left 0.25s var(--ease);
 	}
 
 	.log-list a:hover {
-		padding-left: 0.4rem;
+		padding-left: 0.35rem;
 	}
 
-	.date {
-		grid-row: span 2;
-		align-self: start;
-		font-size: 0.9rem;
-		color: var(--ink-soft);
-		padding-top: 0.2rem;
+	.cover {
+		width: 7.5rem;
+		height: 5.25rem;
+		object-fit: cover;
+		border-radius: 0.45rem;
+		background: rgba(28, 42, 56, 0.08);
+	}
+
+	.cover-empty {
+		display: block;
+		background:
+			linear-gradient(135deg, rgba(42, 107, 114, 0.18), rgba(184, 90, 42, 0.12)),
+			rgba(28, 42, 56, 0.06);
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		min-width: 0;
+		padding-top: 0.15rem;
 	}
 
 	.title {
@@ -157,25 +215,27 @@ const uncategorized = posts.filter((p) => !p.category_id);
 		font-size: 1.3rem;
 		font-weight: 700;
 		color: var(--ink);
+		line-height: 1.3;
 	}
 
-	.summary {
-		grid-column: 2;
+	.meta {
+		font-size: 0.92rem;
 		color: var(--ink-soft);
-		font-size: 0.95rem;
 	}
 
 	@media (max-width: 720px) {
 		.log-list a {
-			grid-template-columns: 1fr;
+			grid-template-columns: 5.5rem 1fr;
+			gap: 0.75rem 0.9rem;
 		}
 
-		.date {
-			grid-row: auto;
+		.cover {
+			width: 5.5rem;
+			height: 4rem;
 		}
 
-		.summary {
-			grid-column: auto;
+		.title {
+			font-size: 1.15rem;
 		}
 	}
 </style>

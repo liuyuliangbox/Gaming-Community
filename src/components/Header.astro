@@ -1,6 +1,9 @@
 ---
 import { PROJECT_CODENAME, SITE_TITLE } from '../consts';
+import { getForumCategories } from '../lib/forum';
 import HeaderLink from './HeaderLink.astro';
+
+const forumCategories = getForumCategories();
 ---
 
 <header class="site-header">
@@ -11,7 +14,17 @@ import HeaderLink from './HeaderLink.astro';
 		</a>
 		<div class="links">
 			<HeaderLink href="/">首页</HeaderLink>
-			<HeaderLink href="/logs/">开发日志</HeaderLink>
+			{
+				forumCategories.length > 0 ? (
+					forumCategories.map((cat) => (
+						<HeaderLink href={forumCategories.length === 1 ? '/logs/' : `/logs/#cat-${cat.id}`}>
+							{cat.name}
+						</HeaderLink>
+					))
+				) : (
+					<HeaderLink href="/logs/">日志</HeaderLink>
+				)
+			}
 			<HeaderLink href="/about/">关于</HeaderLink>
 			<HeaderLink href="/community/">社区</HeaderLink>
 			<HeaderLink href="/download/">下载</HeaderLink>
