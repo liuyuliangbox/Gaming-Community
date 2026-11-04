@@ -65,6 +65,15 @@ async function main() {
 	for (const post of posts) {
 		const detail = await fetchJson(`${FORUM_API_BASE}/api/export/site-posts/${post.id}`);
 		const cover_url = extractCoverUrl(detail.content || '');
+		const featured_comments = Array.isArray(detail.featured_comments)
+			? detail.featured_comments.map((c) => ({
+					id: c.id,
+					content: c.content,
+					created_at: c.created_at,
+					author_name: c.author_name || '',
+					author_avatar: c.author_avatar ? absolutizeForumUrl(c.author_avatar) : null
+				}))
+			: [];
 		const record = {
 			id: detail.id,
 			title: detail.title,
@@ -75,7 +84,8 @@ async function main() {
 			author_name: detail.author_name,
 			is_pinned: !!detail.is_pinned,
 			created_at: detail.created_at,
-			cover_url
+			cover_url,
+			featured_comments
 		};
 		await fs.writeFile(path.join(postsDir, `${record.id}.json`), JSON.stringify(record, null, 2) + '\n', 'utf8');
 		index.push({
