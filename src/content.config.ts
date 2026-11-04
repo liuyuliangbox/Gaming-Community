@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 /**
- * 开发日志已改为论坛静态同步（src/data/forum）。
+ * 开发日志已改为社区静态同步（src/data/forum）。
  * 保留空 collection，避免删除目录后 Astro 报错；勿再往这里加 MD 日志。
  */
 const logs = defineCollection({

@@ -1,13 +1,69 @@
 [
   {
+    "id": 12,
+    "title": "内测尚未开放",
+    "summary": "liuyuliangbox / Project Turn 仍在开发中。公开试玩包与内测资格会通过开发日志与社区通知发布。 想第一时间知道开放消息？ 关注官网「开发进度」栏目 加入社区 https://bbs.aridjaya.eu.org 的「闲聊 / 招募测试」分类",
+    "category_id": 12,
+    "category_name": "下载",
+    "author_name": "Admin",
+    "is_pinned": false,
+    "created_at": "2026-11-04 10:11:39",
+    "cover_url": null
+  },
+  {
+    "id": 10,
+    "title": "关于 liuyuliangbox",
+    "summary": "我们正在开发一款 单人优先 的回合制 RPG。当前对外代号为 Project Turn ，正式名称待定 / Working Title。 我们在做什么 希望玩家可以按自己的节奏慢慢推进：清晰的回合策略、可读的战斗信息、以及值得反复尝试的构筑空间。多人与联网能力会服务于单人体感，而不是反过来。 当前阶段 项目仍在开发中。",
+    "category_id": 10,
+    "category_name": "关于",
+    "author_name": "Admin",
+    "is_pinned": false,
+    "created_at": "2026-11-04 10:11:38",
+    "cover_url": null
+  },
+  {
+    "id": 11,
+    "title": "社区规则",
+    "summary": "正式社区托管在 Cloudflare（CForum）。请先阅读规则，再参与讨论、反馈与建议。 发言约定 尊重他人：禁止人身攻击、歧视与骚扰。 对事不对人：反馈尽量附带复现步骤、截图或期望行为。 不剧透未公开内容：开发者未发布的剧情与数值请勿外传。 不发布盗版、外挂、破解或恶意链接。 标题写清楚：例如「建议 / Bug ",
+    "category_id": 11,
+    "category_name": "社区规则",
+    "author_name": "Admin",
+    "is_pinned": false,
+    "created_at": "2026-11-04 10:11:38",
+    "cover_url": null
+  },
+  {
+    "id": 8,
+    "title": "测试发帖测试发帖测试发帖测试发帖测试发帖",
+    "summary": "测试发帖测试发帖测试发帖测试发帖测试发帖测试发帖测试发帖测试发帖测试发帖",
+    "category_id": 9,
+    "category_name": "游戏攻略",
+    "author_name": "Admin",
+    "is_pinned": false,
+    "created_at": "2026-11-04 08:34:45",
+    "cover_url": null
+  },
+  {
+    "id": 7,
+    "title": "测试发帖隐藏",
+    "summary": "667",
+    "category_id": 9,
+    "category_name": "游戏攻略",
+    "author_name": "Admin",
+    "is_pinned": false,
+    "created_at": "2026-11-04 03:43:23",
+    "cover_url": null
+  },
+  {
     "id": 4,
     "title": "官网与社区脚手架上线",
-    "summary": "用独立社区仓库搭好 Astro 静态站，开发期以日志为主，论坛走 GitHub Discussions。 本周把社区官网的第一版骨架推上了线。 做了什么 使用 Astro 搭建中文社区站，部署目标为 Cloudflare Pages 对外品牌暂用工作室名 liuyuliangbox ，项目代号 Project Turn",
+    "summary": "用独立社区仓库搭好 Astro 静态站，开发期以日志为主，社区走 GitHub Discussions。 本周把社区官网的第一版骨架推上了线。 做了什么 使用 Astro 搭建中文社区站，部署目标为 Cloudflare Pages 对外品牌暂用工作室名 liuyuliangbox ，项目代号 Project Turn",
     "category_id": 4,
     "category_name": "开发进度",
     "author_name": "Admin",
     "is_pinned": false,
-    "created_at": "2026-11-03 12:00:00"
+    "created_at": "2026-11-03 12:00:00",
+    "cover_url": null
   },
   {
     "id": 5,
@@ -17,6 +73,7 @@
     "category_name": "开发进度",
     "author_name": "Admin",
     "is_pinned": false,
-    "created_at": "2026-10-20 12:00:00"
+    "created_at": "2026-10-20 12:00:00",
+    "cover_url": null
   }
 ]

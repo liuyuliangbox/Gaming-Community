@@ -6,14 +6,14 @@ export const SITE_DESCRIPTION =
 export const SITE_TAGLINE = '单人优先的回合制 RPG，开发日志与社区反馈进行中';
 export const WORKING_TITLE_NOTE = '正式名称待定 / Working Title';
 
-/** GitHub Discussions 论坛（开启后即可使用） */
+/** GitHub Discussions 备用讨论区 */
 export const DISCUSSIONS_URL =
 	'https://github.com/liuyuliangbox/Gaming-Community/discussions';
 
-/** 论坛短链 / CForum Pages */
+/** 社区短链 / CForum Pages */
 export const BBS_URL = 'https://bbs.aridjaya.eu.org';
 
-/** 论坛 API（构建期 sync 使用，页面运行时不直连） */
+/** 社区 API（构建期 sync 使用，页面运行时不直连） */
 export const FORUM_API_BASE = 'https://bbs.aridjaya.eu.org';
 
 /**

@@ -14,9 +14,9 @@
 1. **推荐**：CForum 仓库 Actions → **Rebuild Official Site**（已有 `CF_API_TOKEN` / `CF_ACCOUNT_ID`；每天 UTC 02:00 ≈ 北京 10:00，可 `workflow_dispatch`）
 2. 或本仓库 `.github/workflows/deploy.yml`：写入同名 Secrets 后同样可 cron / 手动部署
 
-## 2. 论坛（CForum）
+## 2. 社区（CForum）
 
-论坛仓库：`liuyuliangbox/CForum`  
+社区仓库：`liuyuliangbox/CForum`  
 线上 Pages 项目名：**`cforum`**（子域为 `cforum-cae.pages.dev`；另有试验项目 `cforum-cae` 可忽略）
 
 - 生产：https://cforum-cae.pages.dev
@@ -34,5 +34,5 @@
 ## 3. 验证
 
 - https://game.aridjaya.eu.org/
-- https://cforum-cae.pages.dev/ （论坛）
-- https://bbs.aridjaya.eu.org/ （应等于论坛，不再跳 GitHub）
+- https://cforum-cae.pages.dev/ （社区）
+- https://bbs.aridjaya.eu.org/ （应等于社区，不再跳 GitHub）

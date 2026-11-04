@@ -13,6 +13,8 @@ export type ForumCategory = {
 	id: number;
 	name: string;
 	subtitle?: string;
+	/** false = 仅官网栏目，不在社区发帖流展示；详情页不展示社区精选评论入口 */
+	show_on_forum?: boolean;
 	sort_order?: number;
 	created_at?: string;
 };

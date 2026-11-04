@@ -3,8 +3,8 @@
 liuyuliangbox / **Project Turn** 社区官网仓库。
 
 - 官网：Astro 静态站 → Cloudflare Workers + Assets（`gaming-community`）→ `game.aridjaya.eu.org`
-- 论坛：CForum → `bbs.aridjaya.eu.org`
-- 开发日志：构建期从论坛「官网展示」栏目同步为静态页（`/logs/`）
+- 社区：CForum → `bbs.aridjaya.eu.org`
+- 开发日志：构建期从社区「官网展示」栏目同步为静态页（`/logs/`）
 
 正式游戏名称待定（Working Title）。
 
@@ -31,7 +31,7 @@ set SKIP_FORUM_SYNC=1
 npm run build
 ```
 
-一次性把旧 Markdown 日志导入论坛（需管理员密码）：
+一次性把旧 Markdown 日志导入社区（需管理员密码）：
 
 ```bash
 set FORUM_ADMIN_PASSWORD=...
@@ -53,10 +53,10 @@ npx wrangler deploy
 - 或 CForum Actions：**Rebuild Official Site**（已配置 CF secrets）
 - 或本仓库 Actions：**Build and Deploy Site**（需 `CF_API_TOKEN` + `CF_ACCOUNT_ID`）
 
-官网导航与 `/logs/c/:id/` 栏目页均在构建期从论坛「官网展示」分类同步；分类副标题在后台勾选「官网展示」后填写。
+官网导航与 `/logs/c/:id/` 栏目页均在构建期从社区「官网展示」分类同步；分类副标题在后台勾选「官网展示」后填写。未勾选「社区展示」的栏目在详情页不展示社区精选评论与讨论入口（Giscus 仍保留）。
 
 ## 内容来源
 
-- 论坛管理后台为栏目打开「官网展示」后，下次官网构建会同步到 `/logs/`
+- 社区管理后台为栏目打开「官网展示」后，下次官网构建会同步到 `/logs/`
 - 默认同步源：栏目 **开发进度**（`show_on_site=1`）
 - 页面运行时不直连 bbs；仅构建阶段请求 `https://bbs.aridjaya.eu.org/api/export/...`
