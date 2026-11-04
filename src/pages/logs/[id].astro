@@ -1,6 +1,7 @@
 ---
 import { marked } from 'marked';
 import FormattedDate from '../../components/FormattedDate.astro';
+import Giscus from '../../components/Giscus.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { BBS_URL } from '../../consts';
 import {
@@ -53,10 +54,10 @@ const featuredComments = (post.featured_comments || []).map((c) => {
 			<div class="prose" set:html={html} />
 
 			<section class="featured-comments" aria-labelledby="featured-comments-title">
-				<h2 id="featured-comments-title">官网精选评论</h2>
+				<h2 id="featured-comments-title">社区精选评论</h2>
 				{
 					featuredComments.length === 0 ? (
-						<p class="featured-empty">暂无精选评论。管理员可在论坛将一级评论标为「官网精选」。</p>
+						<p class="featured-empty">暂无社区精选评论。</p>
 					) : (
 						<ul class="comment-list">
 							{featuredComments.map((c) => (
@@ -79,10 +80,11 @@ const featuredComments = (post.featured_comments || []).map((c) => {
 				}
 				<p class="forum-cta">
 					<a href={`${BBS_URL}/post?id=${post.id}`} target="_blank" rel="noopener noreferrer"
-						>在论坛查看更多讨论</a
+						>在社区查看更多讨论</a
 					>
 				</p>
 			</section>
+			<Giscus />
 		</article>
 	</main>
 </BaseLayout>
