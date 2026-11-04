@@ -1,9 +1,11 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "gaming-community",
+	"main": "workers/site.js",
 	"compatibility_date": "2025-09-27",
 	"assets": {
 		"directory": "./dist",
+		"binding": "ASSETS",
 		"not_found_handling": "404-page"
 	},
 	"observability": {
