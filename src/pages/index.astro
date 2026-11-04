@@ -1,5 +1,4 @@
 ---
-import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
@@ -10,10 +9,9 @@ import {
 	SITE_TITLE,
 	WORKING_TITLE_NOTE,
 } from '../consts';
+import { getForumPostIndex, parseForumDate } from '../lib/forum';
 
-const posts = (await getCollection('logs'))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+const posts = getForumPostIndex().slice(0, 3);
 ---
 
 <BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -41,21 +39,25 @@ const posts = (await getCollection('logs'))
 			<h2>最新开发日志</h2>
 			<a href="/logs/">查看全部</a>
 		</div>
-		<ul class="log-list">
-			{
-				posts.map((post) => (
-					<li>
-						<a href={`/logs/${post.id}/`}>
-							<span class="date">
-								<FormattedDate date={post.data.pubDate} />
-							</span>
-							<span class="title">{post.data.title}</span>
-							<span class="summary">{post.data.description}</span>
-						</a>
-					</li>
-				))
-			}
-		</ul>
+		{
+			posts.length === 0 ? (
+				<p class="empty">同步后将在此展示论坛「官网展示」栏目中的最新帖子。</p>
+			) : (
+				<ul class="log-list">
+					{posts.map((post) => (
+						<li>
+							<a href={`/logs/${post.id}/`}>
+								<span class="date">
+									<FormattedDate date={parseForumDate(post.created_at)} />
+								</span>
+								<span class="title">{post.title}</span>
+								<span class="summary">{post.summary}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)
+		}
 	</section>
 </BaseLayout>
 
@@ -166,6 +168,10 @@ const posts = (await getCollection('logs'))
 		text-decoration: none;
 		font-weight: 600;
 		font-size: 0.95rem;
+	}
+
+	.empty {
+		color: var(--ink-soft);
 	}
 
 	.log-list {

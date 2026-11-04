@@ -1,0 +1,43 @@
+name: Build and Deploy Site
+
+on:
+  schedule:
+    # Daily ~10:00 Asia/Shanghai (UTC 02:00)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Sync forum + deploy Worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync forum + build
+        env:
+          FORUM_API_BASE: https://bbs.aridjaya.eu.org
+        run: npm run build
+
+      - name: Deploy Worker (Assets)
+        if: ${{ secrets.CF_API_TOKEN != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy
+
+      - name: Deploy note
+        if: ${{ secrets.CF_API_TOKEN == '' }}
+        run: |
+          echo "Build OK. Add CF_API_TOKEN + CF_ACCOUNT_ID to deploy from this repo,"
+          echo "or use CForum workflow「Rebuild Official Site」(same secrets, daily + manual)."

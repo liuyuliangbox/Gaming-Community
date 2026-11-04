@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Forum sync post bodies (regenerated on build)
+src/data/forum/posts/
+

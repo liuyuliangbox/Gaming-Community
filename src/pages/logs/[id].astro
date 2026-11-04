@@ -1,0 +1,121 @@
+---
+import { marked } from 'marked';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Giscus from '../../components/Giscus.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { BBS_URL } from '../../consts';
+import {
+	absolutizeForumMedia,
+	getForumPost,
+	getForumPostIndex,
+	parseForumDate,
+} from '../../lib/forum';
+
+export function getStaticPaths() {
+	return getForumPostIndex().map((post) => ({
+		params: { id: String(post.id) },
+	}));
+}
+
+const { id } = Astro.params;
+const post = getForumPost(id!);
+if (!post) {
+	return Astro.redirect('/logs/');
+}
+
+const html = marked.parse(absolutizeForumMedia(post.content || ''), { async: false }) as string;
+const pubDate = parseForumDate(post.created_at);
+---
+
+<BaseLayout title={post.title} description={post.summary || post.title}>
+	<main class="container log-main">
+		<article class="log-article fade-up">
+			<header class="log-head">
+				<p class="eyebrow">开发日志{post.category_name ? ` · ${post.category_name}` : ''}</p>
+				<h1>{post.title}</h1>
+				<p class="meta">
+					<FormattedDate date={pubDate} />
+					{post.author_name ? <> · {post.author_name}</> : null}
+				</p>
+				{post.summary ? <p class="desc">{post.summary}</p> : null}
+				<p class="forum-link">
+					<a href={`${BBS_URL}/post?id=${post.id}`} target="_blank" rel="noopener noreferrer"
+						>在论坛查看讨论</a
+					>
+				</p>
+			</header>
+			<div class="prose" set:html={html} />
+			<Giscus />
+		</article>
+	</main>
+</BaseLayout>
+
+<style>
+	.log-main {
+		padding: 2.5rem 0 4rem;
+	}
+
+	.log-article {
+		max-width: 42rem;
+	}
+
+	.eyebrow {
+		margin: 0 0 0.5rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--copper);
+		font-weight: 600;
+	}
+
+	.log-head h1 {
+		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		margin-bottom: 0.75rem;
+	}
+
+	.meta {
+		font-size: 0.92rem;
+		color: var(--ink-soft);
+		margin-bottom: 0.75rem;
+	}
+
+	.desc {
+		font-size: 1.05rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.forum-link {
+		font-size: 0.92rem;
+		margin-bottom: 0;
+	}
+
+	.forum-link a {
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.prose {
+		margin-top: 2rem;
+	}
+
+	.prose :global(h2) {
+		margin-top: 2rem;
+		font-size: 1.45rem;
+	}
+
+	.prose :global(p),
+	.prose :global(ul),
+	.prose :global(ol) {
+		line-height: 1.75;
+		color: var(--ink);
+	}
+
+	.prose :global(img) {
+		max-width: 100%;
+		border-radius: 0.5rem;
+	}
+
+	.prose :global(a) {
+		color: var(--copper);
+	}
+</style>

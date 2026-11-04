@@ -10,8 +10,11 @@ export const WORKING_TITLE_NOTE = '正式名称待定 / Working Title';
 export const DISCUSSIONS_URL =
 	'https://github.com/liuyuliangbox/Gaming-Community/discussions';
 
-/** 论坛短链（Cloudflare 301 到 Discussions） */
+/** 论坛短链 / CForum Pages */
 export const BBS_URL = 'https://bbs.aridjaya.eu.org';
+
+/** 论坛 API（构建期 sync 使用，页面运行时不直连） */
+export const FORUM_API_BASE = 'https://bbs.aridjaya.eu.org';
 
 /**
  * Giscus 配置：在 https://giscus.app/zh-CN 按仓库生成后填入。

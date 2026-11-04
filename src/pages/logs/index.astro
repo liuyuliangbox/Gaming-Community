@@ -1,35 +1,85 @@
 ---
-import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { getForumCategories, getForumPostIndex, parseForumDate } from '../../lib/forum';
 
-const posts = (await getCollection('logs')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const categories = getForumCategories();
+const posts = getForumPostIndex();
+const grouped = categories.map((cat) => ({
+	...cat,
+	posts: posts.filter((p) => p.category_id === cat.id),
+}));
+const uncategorized = posts.filter((p) => !p.category_id);
 ---
 
 <BaseLayout title="开发日志" description={`${SITE_TITLE} 开发日志 · ${SITE_DESCRIPTION}`}>
 	<main class="container page fade-up">
 		<p class="eyebrow">Dev Log</p>
 		<h1>开发日志</h1>
-		<p class="lead">记录进展、设计取舍与需要大家反馈的问题。</p>
+		<p class="lead">进度同步自论坛公开栏目，构建时生成静态页。</p>
 
-		<ul class="log-list">
-			{
-				posts.map((post) => (
-					<li>
-						<a href={`/logs/${post.id}/`}>
-							<span class="date">
-								<FormattedDate date={post.data.pubDate} />
-							</span>
-							<span class="title">{post.data.title}</span>
-							<span class="summary">{post.data.description}</span>
-						</a>
-					</li>
-				))
-			}
-		</ul>
+		{
+			posts.length === 0 ? (
+				<p class="empty">暂无同步内容。请确认论坛栏目已开启「官网展示」，并重新构建官网。</p>
+			) : categories.length > 1 ? (
+				grouped.map((group) =>
+					group.posts.length ? (
+						<section class="cat-block">
+							<h2>{group.name}</h2>
+							<ul class="log-list">
+								{group.posts.map((post) => (
+									<li>
+										<a href={`/logs/${post.id}/`}>
+											<span class="date">
+												<FormattedDate date={parseForumDate(post.created_at)} />
+											</span>
+											<span class="title">{post.title}</span>
+											<span class="summary">{post.summary}</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</section>
+					) : null,
+				)
+			) : (
+				<ul class="log-list">
+					{posts.map((post) => (
+						<li>
+							<a href={`/logs/${post.id}/`}>
+								<span class="date">
+									<FormattedDate date={parseForumDate(post.created_at)} />
+								</span>
+								<span class="title">{post.title}</span>
+								<span class="summary">{post.summary}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)
+		}
+
+		{
+			uncategorized.length > 0 && categories.length > 1 ? (
+				<section class="cat-block">
+					<h2>未分类</h2>
+					<ul class="log-list">
+						{uncategorized.map((post) => (
+							<li>
+								<a href={`/logs/${post.id}/`}>
+									<span class="date">
+										<FormattedDate date={parseForumDate(post.created_at)} />
+									</span>
+									<span class="title">{post.title}</span>
+									<span class="summary">{post.summary}</span>
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			) : null
+		}
 	</main>
 </BaseLayout>
 
@@ -55,6 +105,19 @@ const posts = (await getCollection('logs')).sort(
 	.lead {
 		margin-bottom: 2rem;
 		max-width: 36rem;
+	}
+
+	.empty {
+		color: var(--ink-soft);
+	}
+
+	.cat-block {
+		margin-bottom: 2.5rem;
+	}
+
+	.cat-block h2 {
+		font-size: 1.25rem;
+		margin-bottom: 0.75rem;
 	}
 
 	.log-list {
