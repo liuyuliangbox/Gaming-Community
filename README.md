@@ -49,8 +49,11 @@ npx wrangler deploy
 
 每日 / 手动重建：
 
-- CForum Actions：**Rebuild Official Site**（已配置 CF secrets）
+- **双击**仓库根目录 `rebuild-site.cmd`（需已安装并登录 [GitHub CLI](https://cli.github.com/)）
+- 或 CForum Actions：**Rebuild Official Site**（已配置 CF secrets）
 - 或本仓库 Actions：**Build and Deploy Site**（需 `CF_API_TOKEN` + `CF_ACCOUNT_ID`）
+
+官网导航与 `/logs/c/:id/` 栏目页均在构建期从论坛「官网展示」分类同步；分类副标题在后台勾选「官网展示」后填写。
 
 ## 内容来源
 
