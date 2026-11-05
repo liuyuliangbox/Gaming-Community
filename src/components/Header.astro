@@ -1,13 +1,13 @@
 ---
 import { getForumCategories, getForumPostIndex, getSiteMeta } from '../lib/forum';
+import { normalizePathname } from '../lib/path';
 import HeaderLink from './HeaderLink.astro';
 
 const meta = getSiteMeta();
 const forumCategories = getForumCategories();
 
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const normalized = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
-const isHome = normalized === '' || normalized === '/';
+const normalized = normalizePathname(Astro.url.pathname);
+const isHome = normalized === '/';
 
 /** Detail `/logs/:id` should light up its category nav item */
 let activeCategoryId: number | null = null;

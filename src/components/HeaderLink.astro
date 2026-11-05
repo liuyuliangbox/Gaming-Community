@@ -1,5 +1,6 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { normalizePathname } from '../lib/path';
 
 type Props = HTMLAttributes<'a'> & {
 	/** When set, overrides pathname-based active detection */
@@ -7,13 +8,11 @@ type Props = HTMLAttributes<'a'> & {
 };
 
 const { href, class: className, active: activeProp, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const normalized = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
-const hrefPath = typeof href === 'string' ? href.replace(/\/$/, '') || '/' : '/';
+const normalized = normalizePathname(Astro.url.pathname);
+const hrefPath =
+	typeof href === 'string' ? normalizePathname(href.startsWith('http') ? new URL(href).pathname : href) : '/';
 const autoActive =
-	hrefPath === '/'
-		? normalized === '' || normalized === '/'
-		: normalized === hrefPath || normalized.startsWith(`${hrefPath}/`);
+	hrefPath === '/' ? normalized === '/' : normalized === hrefPath || normalized.startsWith(`${hrefPath}/`);
 const isActive = typeof activeProp === 'boolean' ? activeProp : autoActive;
 ---
 
