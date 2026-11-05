@@ -31,7 +31,8 @@ export type SiteMeta = {
 	/** 首页产品一句话 */
 	product_tagline: string;
 	site_description: string;
-	forum_link_label: string;
+	/** 首页「查看更多」跳转的社区首页 */
+	community_home_url: string;
 	footer_rights: string;
 	/** 页尾友链（与导航栏目独立） */
 	friend_links: FriendLink[];
@@ -76,7 +77,7 @@ const DEFAULT_SITE_META: SiteMeta = {
 	working_title_note: WORKING_TITLE_NOTE,
 	product_tagline: '单人修道，一回合定势。江湖未定，先把战斗打通。',
 	site_description: SITE_DESCRIPTION,
-	forum_link_label: 'bbs.aridjaya.eu.org',
+	community_home_url: BBS_URL,
 	footer_rights: '保留所有权利。',
 	friend_links: DEFAULT_FRIEND_LINKS,
 };
@@ -122,7 +123,10 @@ export function getSiteMeta(): SiteMeta {
 		working_title_note: String(raw.working_title_note || DEFAULT_SITE_META.working_title_note),
 		product_tagline: String(raw.product_tagline || DEFAULT_SITE_META.product_tagline),
 		site_description: String(raw.site_description || DEFAULT_SITE_META.site_description),
-		forum_link_label: String(raw.forum_link_label || DEFAULT_SITE_META.forum_link_label),
+		community_home_url: String(raw.community_home_url || DEFAULT_SITE_META.community_home_url).replace(
+			/\/+$/,
+			''
+		),
 		footer_rights: String(raw.footer_rights || DEFAULT_SITE_META.footer_rights),
 		friend_links: parseFriendLinks(raw.friend_links),
 	};
