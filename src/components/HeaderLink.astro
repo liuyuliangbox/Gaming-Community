@@ -1,16 +1,20 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = HTMLAttributes<'a'>;
+type Props = HTMLAttributes<'a'> & {
+	/** When set, overrides pathname-based active detection */
+	active?: boolean;
+};
 
-const { href, class: className, ...props } = Astro.props;
+const { href, class: className, active: activeProp, ...props } = Astro.props;
 const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
 const normalized = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
 const hrefPath = typeof href === 'string' ? href.replace(/\/$/, '') || '/' : '/';
-const isActive =
+const autoActive =
 	hrefPath === '/'
 		? normalized === '' || normalized === '/'
 		: normalized === hrefPath || normalized.startsWith(`${hrefPath}/`);
+const isActive = typeof activeProp === 'boolean' ? activeProp : autoActive;
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>

@@ -222,13 +222,9 @@ const featuredComments = (post.featured_comments || []).map((c) => {
 		align-items: center;
 		gap: 0.35rem;
 		font-weight: 600;
-		text-decoration: none;
+		text-decoration: underline;
+		text-underline-offset: 0.22em;
+		text-decoration-thickness: 1px;
 		color: var(--copper);
-		border-bottom: 1px solid transparent;
-		transition: border-color 0.2s var(--ease);
-	}
-
-	.forum-cta a:hover {
-		border-bottom-color: var(--copper);
 	}
 </style>

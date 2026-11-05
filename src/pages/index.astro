@@ -2,49 +2,53 @@
 import FormattedDate from '../components/FormattedDate.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BBS_URL } from '../consts';
-import { getForumCategories, getForumPostIndex, getSiteMeta, parseForumDate } from '../lib/forum';
+import { getSiteFeaturedPosts, getSiteMeta, parseForumDate } from '../lib/forum';
 
 const meta = getSiteMeta();
-const categories = getForumCategories();
-const primaryCat = categories[0];
-const primaryName = primaryCat?.name || '日志';
-const primaryHref = primaryCat ? `/logs/c/${primaryCat.id}/` : '/logs/';
-const posts = getForumPostIndex().slice(0, 3);
+const posts = getSiteFeaturedPosts(3);
+const productLine = meta.product_tagline || meta.working_title_note;
 ---
 
 <BaseLayout title={meta.site_brand} description={meta.site_description}>
 	<section class="hero">
 		<div class="hero-plane" aria-hidden="true"></div>
+		<div class="mist" aria-hidden="true"></div>
 		<div class="container hero-inner">
 			<p class="studio fade-up">{meta.site_brand}</p>
 			<h1 class="codename fade-up-delay">{meta.project_codename}</h1>
-			<p class="tagline fade-up-delay-2">{meta.working_title_note}</p>
+			<p class="tagline fade-up-delay-2">{productLine}</p>
+			{
+				meta.working_title_note && meta.working_title_note !== productLine ? (
+					<p class="note fade-up-delay-2">{meta.working_title_note}</p>
+				) : null
+			}
 			<div class="cta fade-up-delay-2">
-				<a class="btn btn-primary" href={primaryHref}>阅读{primaryName}</a>
+				<a class="btn btn-primary" href="#featured">最新社区精选</a>
 				<a
 					class="btn btn-ghost"
 					href={BBS_URL}
 					target="_blank"
-					rel="noopener noreferrer">加入讨论</a
+					rel="noopener noreferrer">进入社区</a
 				>
 			</div>
 		</div>
 	</section>
 
-	<section class="container section latest">
+	<section id="featured" class="container section latest">
 		<div class="section-head">
-			<h2>最新{primaryName}</h2>
-			<a href={primaryHref}>查看全部</a>
+			<h2>最新社区精选</h2>
+			<a href={BBS_URL} target="_blank" rel="noopener noreferrer">查看更多</a>
 		</div>
 		{
 			posts.length === 0 ? (
-				<p class="empty">同步后将在此展示社区「官网展示」栏目中的最新帖子。</p>
+				<p class="empty">暂无社区精选。在社区后台将帖子标为「官网精选」后，重建官网即可出现在此。</p>
 			) : (
 				<ul class="log-list">
 					{posts.map((post) => (
 						<li>
 							<p class="meta">
 								<FormattedDate date={parseForumDate(post.created_at)} />
+								{post.category_name ? <> · {post.category_name}</> : null}
 								{post.author_name ? <> · {post.author_name}</> : null}
 							</p>
 							<a href={`/logs/${post.id}/`}>
@@ -85,13 +89,24 @@ const posts = getForumPostIndex().slice(0, 3);
 	.hero-plane {
 		position: absolute;
 		inset: 0;
-		z-index: -1;
+		z-index: -2;
 		background:
-			linear-gradient(180deg, rgba(21, 32, 43, 0.08) 0%, rgba(21, 32, 43, 0.55) 100%),
-			radial-gradient(ellipse 80% 60% at 70% 30%, rgba(42, 107, 114, 0.45), transparent 55%),
-			radial-gradient(ellipse 70% 50% at 20% 70%, rgba(184, 90, 42, 0.28), transparent 50%),
-			linear-gradient(135deg, #1c2a38 0%, #243b4a 45%, #3a2a22 100%);
-		animation: planeShift 18s ease-in-out infinite alternate;
+			linear-gradient(180deg, rgba(18, 28, 36, 0.2) 0%, rgba(12, 20, 28, 0.72) 100%),
+			radial-gradient(ellipse 90% 55% at 78% 18%, rgba(56, 92, 88, 0.38), transparent 58%),
+			radial-gradient(ellipse 70% 48% at 12% 78%, rgba(140, 72, 40, 0.22), transparent 52%),
+			linear-gradient(148deg, #121c24 0%, #1a2c34 42%, #2a221c 100%);
+		animation: planeShift 20s ease-in-out infinite alternate;
+	}
+
+	.mist {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background:
+			radial-gradient(ellipse 60% 35% at 50% 88%, rgba(238, 243, 247, 0.14), transparent 70%),
+			radial-gradient(ellipse 40% 25% at 30% 60%, rgba(200, 220, 220, 0.06), transparent 65%);
+		animation: mistDrift 14s ease-in-out infinite alternate;
 	}
 
 	.hero-plane::after {
@@ -99,21 +114,32 @@ const posts = getForumPostIndex().slice(0, 3);
 		position: absolute;
 		inset: 0;
 		background-image:
-			linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-		background-size: 56px 56px;
-		opacity: 0.35;
-		mask-image: linear-gradient(180deg, #000 20%, transparent 90%);
+			linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+		background-size: 64px 64px;
+		opacity: 0.28;
+		mask-image: linear-gradient(180deg, #000 15%, transparent 88%);
 	}
 
 	@keyframes planeShift {
 		from {
-			filter: saturate(1) hue-rotate(0deg);
+			filter: saturate(1) brightness(1);
 			transform: scale(1);
 		}
 		to {
-			filter: saturate(1.08) hue-rotate(6deg);
-			transform: scale(1.03);
+			filter: saturate(1.06) brightness(1.03);
+			transform: scale(1.025);
+		}
+	}
+
+	@keyframes mistDrift {
+		from {
+			opacity: 0.85;
+			transform: translateY(0);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(-1.2%);
 		}
 	}
 
@@ -141,22 +167,24 @@ const posts = getForumPostIndex().slice(0, 3);
 	}
 
 	.tagline {
-		max-width: 28rem;
-		margin-bottom: 1.75rem;
-		color: rgba(238, 243, 247, 0.88);
-		font-size: 1.08rem;
+		max-width: 30rem;
+		margin: 0 0 0.65rem;
+		color: rgba(238, 243, 247, 0.92);
+		font-size: 1.12rem;
+		line-height: 1.55;
 	}
 
 	.cta {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.75rem;
+		margin-top: 1.35rem;
 	}
 
 	.note {
-		margin-top: 1.25rem;
+		margin: 0;
 		font-size: 0.85rem;
-		color: rgba(238, 243, 247, 0.65);
+		color: rgba(238, 243, 247, 0.62);
 	}
 
 	.section {
@@ -179,6 +207,13 @@ const posts = getForumPostIndex().slice(0, 3);
 		text-decoration: none;
 		font-weight: 600;
 		font-size: 0.95rem;
+		color: var(--copper);
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.2s var(--ease);
+	}
+
+	.section-head a:hover {
+		border-bottom-color: var(--copper);
 	}
 
 	.empty {

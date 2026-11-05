@@ -19,13 +19,22 @@ export type ForumCategory = {
 	created_at?: string;
 };
 
+export type FriendLink = {
+	label: string;
+	url: string;
+};
+
 export type SiteMeta = {
 	site_brand: string;
 	project_codename: string;
 	working_title_note: string;
+	/** 首页产品一句话 */
+	product_tagline: string;
 	site_description: string;
 	forum_link_label: string;
 	footer_rights: string;
+	/** 页尾友链（与导航栏目独立） */
+	friend_links: FriendLink[];
 };
 
 export type ForumFeaturedComment = {
@@ -44,6 +53,8 @@ export type ForumPostIndex = {
 	category_name: string | null;
 	author_name?: string;
 	is_pinned?: boolean;
+	/** 官网精选 / 社区精选 */
+	site_featured?: boolean;
 	created_at: string;
 	cover_url?: string | null;
 };
@@ -55,13 +66,19 @@ export type ForumPost = ForumPostIndex & {
 
 const dataDir = path.join(process.cwd(), 'src', 'data', 'forum');
 
+const DEFAULT_FRIEND_LINKS: FriendLink[] = [
+	{ label: '社区 bbs.aridjaya.eu.org', url: BBS_URL },
+];
+
 const DEFAULT_SITE_META: SiteMeta = {
 	site_brand: SITE_TITLE,
 	project_codename: PROJECT_CODENAME,
 	working_title_note: WORKING_TITLE_NOTE,
+	product_tagline: '单人修道，一回合定势。江湖未定，先把战斗打通。',
 	site_description: SITE_DESCRIPTION,
 	forum_link_label: 'bbs.aridjaya.eu.org',
 	footer_rights: '保留所有权利。',
+	friend_links: DEFAULT_FRIEND_LINKS,
 };
 
 function readJson<T>(filePath: string, fallback: T): T {
@@ -72,16 +89,50 @@ function readJson<T>(filePath: string, fallback: T): T {
 	}
 }
 
+function parseFriendLinks(raw: unknown): FriendLink[] {
+	let list: unknown = raw;
+	if (typeof raw === 'string') {
+		try {
+			list = JSON.parse(raw);
+		} catch {
+			return [...DEFAULT_FRIEND_LINKS];
+		}
+	}
+	if (!Array.isArray(list)) return [...DEFAULT_FRIEND_LINKS];
+	const links = list
+		.map((item) => {
+			if (!item || typeof item !== 'object') return null;
+			const label = String((item as FriendLink).label || '').trim();
+			const url = String((item as FriendLink).url || '').trim();
+			if (!label || !url) return null;
+			return { label, url };
+		})
+		.filter((x): x is FriendLink => !!x);
+	return links.length > 0 ? links : [...DEFAULT_FRIEND_LINKS];
+}
+
 export function getSiteMeta(): SiteMeta {
-	const raw = readJson<Partial<SiteMeta>>(path.join(dataDir, 'site-meta.json'), {});
+	const raw = readJson<Partial<SiteMeta> & { friend_links?: unknown }>(
+		path.join(dataDir, 'site-meta.json'),
+		{}
+	);
 	return {
 		site_brand: String(raw.site_brand || DEFAULT_SITE_META.site_brand),
 		project_codename: String(raw.project_codename || DEFAULT_SITE_META.project_codename),
 		working_title_note: String(raw.working_title_note || DEFAULT_SITE_META.working_title_note),
+		product_tagline: String(raw.product_tagline || DEFAULT_SITE_META.product_tagline),
 		site_description: String(raw.site_description || DEFAULT_SITE_META.site_description),
 		forum_link_label: String(raw.forum_link_label || DEFAULT_SITE_META.forum_link_label),
 		footer_rights: String(raw.footer_rights || DEFAULT_SITE_META.footer_rights),
+		friend_links: parseFriendLinks(raw.friend_links),
 	};
+}
+
+/** 首页「最新社区精选」：仅官网精选帖 */
+export function getSiteFeaturedPosts(limit = 3): ForumPostIndex[] {
+	return getForumPostIndex()
+		.filter((p) => p.site_featured === true)
+		.slice(0, limit);
 }
 
 export function getForumCategories(): ForumCategory[] {

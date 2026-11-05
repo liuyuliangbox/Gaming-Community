@@ -13,9 +13,13 @@ const DEFAULT_SITE_META = {
 	site_brand: 'liuyuliangbox',
 	project_codename: 'Project Turn',
 	working_title_note: '正式名称待定 / Working Title',
+	product_tagline: '单人修道，一回合定势。江湖未定，先把战斗打通。',
 	site_description: '单人优先的回合制 RPG。开发日志、社区反馈与内测资讯。正式名称待定。',
 	forum_link_label: 'bbs.aridjaya.eu.org',
-	footer_rights: '保留所有权利。'
+	footer_rights: '保留所有权利。',
+	friend_links: JSON.stringify([
+		{ label: '社区 bbs.aridjaya.eu.org', url: 'https://bbs.aridjaya.eu.org' }
+	])
 };
 
 async function fetchJson(url) {
@@ -100,6 +104,7 @@ async function main() {
 					author_avatar: c.author_avatar ? absolutizeForumUrl(c.author_avatar) : null
 				}))
 			: [];
+		const site_featured = !!(detail.site_featured ?? post.site_featured);
 		const record = {
 			id: detail.id,
 			title: detail.title,
@@ -109,6 +114,7 @@ async function main() {
 			category_name: detail.category_name,
 			author_name: detail.author_name,
 			is_pinned: !!detail.is_pinned,
+			site_featured,
 			created_at: detail.created_at,
 			cover_url,
 			featured_comments
@@ -122,6 +128,7 @@ async function main() {
 			category_name: record.category_name,
 			author_name: record.author_name,
 			is_pinned: record.is_pinned,
+			site_featured: record.site_featured,
 			created_at: record.created_at,
 			cover_url: record.cover_url
 		});

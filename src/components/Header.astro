@@ -1,9 +1,24 @@
 ---
-import { getForumCategories, getSiteMeta } from '../lib/forum';
+import { getForumCategories, getForumPostIndex, getSiteMeta } from '../lib/forum';
 import HeaderLink from './HeaderLink.astro';
 
 const meta = getSiteMeta();
 const forumCategories = getForumCategories();
+
+const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
+const normalized = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
+const isHome = normalized === '' || normalized === '/';
+
+/** Detail `/logs/:id` should light up its category nav item */
+let activeCategoryId: number | null = null;
+const catMatch = normalized.match(/^\/logs\/c\/(\d+)$/);
+const postMatch = normalized.match(/^\/logs\/(\d+)$/);
+if (catMatch) {
+	activeCategoryId = Number(catMatch[1]);
+} else if (postMatch) {
+	const post = getForumPostIndex().find((p) => Number(p.id) === Number(postMatch[1]));
+	if (post?.category_id != null) activeCategoryId = Number(post.category_id);
+}
 ---
 
 <header class="site-header">
@@ -13,11 +28,13 @@ const forumCategories = getForumCategories();
 			<span class="brand-code">{meta.project_codename}</span>
 		</a>
 		<div class="links">
-			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href="/" active={isHome}>首页</HeaderLink>
 			{
 				forumCategories.length > 0 ? (
 					forumCategories.map((cat) => (
-						<HeaderLink href={`/logs/c/${cat.id}/`}>{cat.name}</HeaderLink>
+						<HeaderLink href={`/logs/c/${cat.id}/`} active={activeCategoryId === Number(cat.id)}>
+							{cat.name}
+						</HeaderLink>
 					))
 				) : (
 					<HeaderLink href="/logs/">日志</HeaderLink>

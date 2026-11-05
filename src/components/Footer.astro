@@ -1,10 +1,9 @@
 ---
-import { BBS_URL } from '../consts';
-import { getForumCategories, getSiteMeta } from '../lib/forum';
+import { getSiteMeta } from '../lib/forum';
 
 const year = new Date().getFullYear();
 const meta = getSiteMeta();
-const forumCategories = getForumCategories();
+const friendLinks = meta.friend_links;
 ---
 
 <footer class="site-footer">
@@ -13,16 +12,17 @@ const forumCategories = getForumCategories();
 			<p class="foot-brand">{meta.site_brand}</p>
 			<p class="foot-meta">{meta.project_codename} · {meta.working_title_note}</p>
 		</div>
-		<div class="foot-links">
-			{
-				forumCategories.length > 0 ? (
-					forumCategories.map((cat) => <a href={`/logs/c/${cat.id}/`}>{cat.name}</a>)
-				) : (
-					<a href="/logs/">日志</a>
-				)
-			}
-			<a href={BBS_URL} target="_blank" rel="noopener noreferrer">{meta.forum_link_label}</a>
-		</div>
+		{
+			friendLinks.length > 0 ? (
+				<div class="foot-links" aria-label="友链">
+					{friendLinks.map((link) => (
+						<a href={link.url} target="_blank" rel="noopener noreferrer">
+							{link.label}
+						</a>
+					))}
+				</div>
+			) : null
+		}
 		<p class="copy">© {year} {meta.site_brand}. {meta.footer_rights}</p>
 	</div>
 </footer>
@@ -63,6 +63,16 @@ const forumCategories = getForumCategories();
 		text-decoration: none;
 		font-weight: 600;
 		font-size: 0.92rem;
+		color: var(--ink-soft);
+		border-bottom: 1px solid transparent;
+		transition:
+			color 0.2s var(--ease),
+			border-color 0.2s var(--ease);
+	}
+
+	.foot-links a:hover {
+		color: var(--ink);
+		border-bottom-color: var(--copper);
 	}
 
 	.copy {
