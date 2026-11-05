@@ -1,4 +1,5 @@
 ---
+import CoverPlaceholder from '../../../components/CoverPlaceholder.astro';
 import FormattedDate from '../../../components/FormattedDate.astro';
 import LogPostDetail from '../../../components/LogPostDetail.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
@@ -65,7 +66,7 @@ const singlePost = posts.length === 1 ? getForumPost(posts[0].id) : null;
 											referrerpolicy="no-referrer"
 										/>
 									) : (
-										<span class="cover cover-empty" aria-hidden="true" />
+										<CoverPlaceholder label={post.category_name || category.name} />
 									)}
 									<span class="body">
 										<span class="title">{post.title}</span>
@@ -148,13 +149,6 @@ const singlePost = posts.length === 1 ? getForumPost(posts[0].id) : null;
 		object-fit: cover;
 		border-radius: 0.45rem;
 		background: rgba(28, 42, 56, 0.08);
-	}
-
-	.cover-empty {
-		display: block;
-		background:
-			linear-gradient(135deg, rgba(42, 107, 114, 0.18), rgba(184, 90, 42, 0.12)),
-			rgba(28, 42, 56, 0.06);
 	}
 
 	.body {

@@ -1,0 +1,102 @@
+---
+interface Props {
+	label?: string | null;
+	class?: string;
+}
+
+const { label, class: className } = Astro.props;
+const text = String(label || '日志').trim() || '日志';
+/** Stable accent from category name — keeps list tiles varied but on-brand */
+let hash = 0;
+for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+const tones = [
+	{ a: 'rgba(42, 107, 114, 0.55)', b: 'rgba(28, 42, 56, 0.92)', c: 'rgba(184, 90, 42, 0.28)' },
+	{ a: 'rgba(143, 67, 28, 0.5)', b: 'rgba(28, 42, 56, 0.9)', c: 'rgba(42, 107, 114, 0.32)' },
+	{ a: 'rgba(58, 74, 92, 0.55)', b: 'rgba(21, 32, 43, 0.92)', c: 'rgba(184, 90, 42, 0.22)' },
+	{ a: 'rgba(61, 138, 146, 0.48)', b: 'rgba(28, 42, 56, 0.88)', c: 'rgba(143, 67, 28, 0.3)' },
+];
+const tone = tones[hash % tones.length];
+const short = text.length > 6 ? `${text.slice(0, 5)}…` : text;
+---
+
+<span
+	class:list={['cover', 'cover-ph', className]}
+	style={`--ph-a:${tone.a};--ph-b:${tone.b};--ph-c:${tone.c};`}
+	aria-hidden="true"
+>
+	<span class="ph-mist"></span>
+	<span class="ph-rule"></span>
+	<span class="ph-label">{short}</span>
+</span>
+
+<style>
+	.cover-ph {
+		position: relative;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+		isolation: isolate;
+		width: 7.5rem;
+		height: 5.25rem;
+		border-radius: 0.45rem;
+		background:
+			radial-gradient(ellipse 90% 70% at 18% 20%, var(--ph-a), transparent 55%),
+			radial-gradient(ellipse 80% 60% at 88% 85%, var(--ph-c), transparent 50%),
+			linear-gradient(145deg, var(--ph-b), #1c2a38 70%);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+
+	.ph-mist {
+		position: absolute;
+		inset: -20%;
+		z-index: 0;
+		background:
+			radial-gradient(ellipse 50% 40% at 60% 70%, rgba(238, 243, 247, 0.12), transparent 70%);
+		opacity: 0.9;
+	}
+
+	.ph-rule {
+		position: absolute;
+		left: 12%;
+		right: 12%;
+		top: 28%;
+		height: 1px;
+		z-index: 1;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(255, 247, 240, 0.45),
+			transparent
+		);
+	}
+
+	.ph-label {
+		position: relative;
+		z-index: 2;
+		max-width: 90%;
+		padding: 0 0.35rem;
+		font-family: var(--font-display);
+		font-size: clamp(0.72rem, 2.2vw, 0.88rem);
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		line-height: 1.2;
+		text-align: center;
+		color: rgba(255, 247, 240, 0.92);
+		text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	@media (max-width: 720px) {
+		.cover-ph {
+			width: 5.5rem;
+			height: 4rem;
+		}
+
+		.ph-label {
+			letter-spacing: 0.08em;
+			font-size: 0.68rem;
+		}
+	}
+</style>
